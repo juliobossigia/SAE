@@ -1,16 +1,23 @@
 <!-- resources/views/alunos/index.blade.php -->
 @extends('layout')
 
+
 @section('content')
+    <header>
     <h1>Lista de Alunos</h1>
     <a href="{{ route('alunos.create') }}">Adicionar Aluno</a>
+    @livewire('logout-button')
+    <br>
+    </header>
+
 
     @if ($message = Session::get('success'))
         <div>
             {{ $message }}
+        
         </div>
     @endif
-
+   
     <table>
         <tr>
             <th>Nome</th>
@@ -37,4 +44,11 @@
             </tr>
         @endforeach
     </table>
+    <div>
+        <br>
+        <a href="{{ route('dashboard')}}">Voltar</a>
+    </div>
+    <footer>
+        <br>
+    </footer>
 @endsection
