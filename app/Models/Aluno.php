@@ -14,5 +14,15 @@ class Aluno extends Model
         'email',
         'data_nascimento',
         'matricula',
+        'turma_id',
+        'curso_id',
     ];
+
+    public function turma(){
+        return $this->belongsTo(Turma::class);
+    }
+    
+    public function curso(){
+        return $this->belongsTo(Curso::class);
+    }
 }

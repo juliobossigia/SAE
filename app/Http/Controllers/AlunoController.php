@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Aluno;
+use App\Models\Curso;
+use App\Models\Turma;
 use Illuminate\Http\Request;
 
 class AlunoController extends Controller
@@ -12,8 +14,8 @@ class AlunoController extends Controller
      */
     public function index()
     {
-        $alunos = Aluno::all();
-        return view('alunos.index',compact('alunos'));
+        $alunos = Aluno::with('turma', 'curso')->get();
+        return view('alunos.index', compact('alunos'));
     }
 
     /**
@@ -21,7 +23,9 @@ class AlunoController extends Controller
      */
     public function create()
     {
-        return view('alunos.create');
+        $turmas = Turma::all();
+        $cursos = Curso::all();
+        return view('alunos.create', compact('turmas', 'cursos'));
     }
 
     /**
@@ -30,39 +34,38 @@ class AlunoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nome'=>'required',
-            'email'=>'required|email|unique:alunos',
-            'data_nascimento'=>'required|date',
-            'matricula'=>'required|unique:alunos',
+            'nome' => 'required',
+            'email' => 'required|email|unique:alunos',
+            'data_nascimento' => 'required|date',
+            'matricula' => 'required|unique:alunos',
+            'turma_id' => 'required|exists:turmas,id',
+            'curso_id' => 'required|exists:cursos,id',
         ]);
 
         Aluno::create($request->all());
 
-        return redirect()->route('alunos.index')->with('sucess','Aluno cadastrado com sucesso!');
+        return redirect()->route('alunos.index')->with('success', 'Aluno cadastrado com sucesso!');
     }
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
-    {   
-        // Buscar o aluno pelo ID
-        $aluno = Aluno::findOrFail($id);
-        
-        
-        return view('alunos.show',compact('aluno'));
+    {
+        $aluno = Aluno::with('turma', 'curso')->findOrFail($id);
+        return view('alunos.show', compact('aluno'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    {   
-        // Buscar o aluno pelo ID
+    {
         $aluno = Aluno::findOrFail($id);
-        
-        
-        return view('alunos.edit',compact('aluno'));
+        $turmas = Turma::all();
+        $cursos = Curso::all();
+
+        return view('alunos.edit', compact('aluno', 'turmas', 'cursos'));
     }
 
     /**
@@ -71,10 +74,12 @@ class AlunoController extends Controller
     public function update(Request $request, Aluno $aluno)
     {
         $request->validate([
-            'nome'=>'required',
-            'email'=>'required|email|unique:alunos',
-            'data_nascimento'=>'required|date',
-            'matricula'=>'required|unique:alunos',
+            'nome' => 'required',
+            'email' => 'required|email|unique:alunos,email,' . $aluno->id,
+            'data_nascimento' => 'required|date',
+            'matricula' => 'required|unique:alunos,matricula,' . $aluno->id,
+            'turma_id' => 'required|exists:turmas,id',
+            'curso_id' => 'required|exists:cursos,id',
         ]);
 
         $aluno->update($request->all());
@@ -88,7 +93,7 @@ class AlunoController extends Controller
     public function destroy(Aluno $aluno)
     {
         $aluno->delete();
-        
-        return redirect()->route('alunos.index')->with('sucess', 'Aluno deletado com sucesso!');
+
+        return redirect()->route('alunos.index')->with('success', 'Aluno deletado com sucesso!');
     }
 }

@@ -5,6 +5,12 @@
     <ul>
         <li><a href="{{route('alunos.index')}}">Alunos</a></li>
         <li><a href="{{route('docentes.index')}}">Docentes</a></li>
+        <li><a href="{{route('turmas.index')}}">Turmas</a></li>
+        <li><a href="{{route('cursos.index')}}">Cursos</a></li>
+        <li><a href="{{route('servidores.index')}}">Servidores</a></li>
+        <li><a href="{{route('setores.index')}}">Setores</a></li>
+
+
 
     </ul>
     <br>

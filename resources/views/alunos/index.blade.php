@@ -22,16 +22,16 @@
         <tr>
             <th>Nome</th>
             <th>Email</th>
-            <th>Data de Nascimento</th>
             <th>Matricula</th>
+            <th>Curso</th>
             <th>Ações</th>
         </tr>
         @foreach ($alunos as $aluno)
             <tr>
                 <td>{{ $aluno->nome }}</td>
                 <td>{{ $aluno->email }}</td>
-                <td>{{ $aluno->data_nascimento }}</td>
                 <td>{{ $aluno->matricula }}</td>
+                <td>{{ $aluno->curso->nome }}</td>
                 <td>
                     <a href="{{ route('alunos.show', $aluno->id) }}">Ver</a>
                     <a href="{{ route('alunos.edit', $aluno->id) }}">Editar</a>

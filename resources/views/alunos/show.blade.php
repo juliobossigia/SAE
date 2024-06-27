@@ -8,6 +8,8 @@
     <p><strong>Email:</strong> {{ $aluno->email }}</p>
     <p><strong>Data de Nascimento:</strong> {{ $aluno->data_nascimento }}</p>
     <p><strong>Matricula:</strong> {{ $aluno->matricula }}</p>
+    <p><strong>Turma:</strong> {{ $aluno->turma->ano }}°{{ $aluno->turma->letra }}</p>
+    <p><strong>Curso:</strong> {{ $aluno->curso->nome }}</p>
     
 
     <a href="{{ route('alunos.index') }}">Voltar</a>

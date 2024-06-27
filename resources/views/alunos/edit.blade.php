@@ -30,6 +30,21 @@
         <label for="data_nascimento">Data de Nascimento:</label>
         <input type="date" name="data_nascimento" id="data_nascimento" value="{{ $aluno->data_nascimento }}">
 
+        <label for="turma_id">Turma</label>
+        <select name="turma_id" id="turma">
+            @foreach($turmas as $turma)
+            <option value="{{$turma->id}}"@if($aluno->turma_id == $turma->id) selected @endif>{{$turma->ano}}°{{$turma->letra}}</option>
+            @endforeach
+        </select>
+
+        <label for="curso_id">Curso</label>
+        <select name="curso_id" id="curso">
+            @foreach($cursos as $curso)
+                <option value="{{$curso->id}}"@if($aluno->curso_id == $curso->id) selected @endif>{{$curso->nome}}</option>
+            @endforeach
+        </select>
+
+
         <button type="submit">Atualizar</button>
     </form>
 
