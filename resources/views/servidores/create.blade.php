@@ -1,4 +1,3 @@
-<!-- resources/views/servidores/create.blade.php -->
 @extends('layout')
 
 @section('content')

@@ -1,4 +1,3 @@
-<!-- resources/views/turmas/create.blade.php -->
 @extends('layout')
 
 @section('content')

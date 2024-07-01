@@ -1,4 +1,3 @@
-<!-- resources/views/setores/edit.blade.php -->
 @extends('layout')
 
 @section('content')

@@ -1,4 +1,3 @@
-<!-- resources/views/alunos/show.blade.php -->
 @extends('layout')
 
 @section('content')

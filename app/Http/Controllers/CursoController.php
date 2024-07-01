@@ -51,4 +51,10 @@ class CursoController extends Controller
         $curso->delete();
         return redirect()->route('cursos.index')->with('success', 'Curso deletado com sucesso!');
     }
+
+
+    public function getTurmas(Curso $curso)
+    {
+        return response()->json($curso->turmas()->get(['id', 'letra', 'ano']));
+    }
 }

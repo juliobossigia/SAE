@@ -1,4 +1,3 @@
-<!-- resources/views/docentes/edit.blade.php -->
 @extends('layout')
 
 @section('content')

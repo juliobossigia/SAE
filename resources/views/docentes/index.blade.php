@@ -1,4 +1,3 @@
-<!-- resources/views/docentes/index.blade.php -->
 @extends('layout')
 
 

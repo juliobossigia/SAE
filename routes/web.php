@@ -29,6 +29,9 @@ Route::middleware(['auth'])->group(function(){
     Route::resource('turmas', TurmaController::class);
     Route::resource('setores', SetorController::class);
     Route::resource('servidores', ServidorController::class);
+
+    // Adiciona a rota API para obter turmas por curso
+    Route::get('/api/cursos/{curso}/turmas', [CursoController::class, 'getTurmas'])->name('api.cursos.turmas');
 });
 
 //ver depois

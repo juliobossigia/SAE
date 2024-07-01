@@ -1,4 +1,3 @@
-<!-- resources/views/turmas/index.blade.php -->
 @extends('layout')
 
 

@@ -1,4 +1,3 @@
-<!-- resources/views/alunos/index.blade.php -->
 @extends('layout')
 
 
