@@ -24,6 +24,15 @@
         <label for="ano">Ano:</label>
         <input type="number" name="ano" id="ano" value="{{$turma->ano }}">
 
+        <label for="curso_id">Curso:</label>
+            <select name="curso_id" id="curso_id" required>
+                @foreach($cursos as $curso)
+                    <option value="{{ $curso->id }}" {{ (isset($turma) && $turma->curso_id == $curso->id) ? 'selected' : '' }}>
+                        {{ $curso->nome }}
+                    </option>
+                @endforeach
+            </select>
+
         <button type="submit">Atualizar</button>
     </form>
 

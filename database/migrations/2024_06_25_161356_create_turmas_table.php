@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('ano');
             $table->string('letra');
+            $table->foreignId('curso_id')->constrained()->onDelete('cascade'); // Adiciona 
             $table->timestamps();
         });
     }

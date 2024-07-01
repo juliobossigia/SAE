@@ -11,10 +11,15 @@ class Turma extends Model
 
     protected $table = 'turmas';
     
-    protected $fillable=['ano','letra'];
+    protected $fillable=['ano','letra','curso_id'];
 
     public function alunos(){
         return $this->hasMany(Aluno::class);
+    }
+
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class);
     }
 
     public function getNomeAttribute(){

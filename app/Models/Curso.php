@@ -10,7 +10,7 @@ class Curso extends Model
     use HasFactory;
     protected $table = 'cursos';
 
-    protected $fillable = ['nome'];
+    protected $fillable = ['nome','turma_id'];
 
     public function alunos(){
         return $this->hasMany(Aluno::class);

@@ -2,7 +2,7 @@
 @extends('layout')
 
 @section('content')
-    <h1>Adicionar Aluno</h1>
+    <h1>Adicionar Servidor</h1>
 
     @if ($errors->any())
         <div>

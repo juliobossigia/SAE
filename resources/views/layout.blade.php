@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CRUD Aluno</title>
+    <title>SAE Admin</title>
     <style>
         body {
             font-family: Arial, sans-serif;
