@@ -29,11 +29,21 @@
                 <td>
                     <a href="{{ route('turmas.show', $turma->id) }}">Ver</a>
                     <a href="{{ route('turmas.edit', $turma->id) }}">Editar</a>
-                    <form action="{{ route('turmas.destroy', $turma->id) }}" method="POST" style="display:inline">
+                    <form action="{{ route('turmas.destroy', $turma->id) }}" method="POST" style="display:inline" class="delete-form">
                         @csrf
                         @method('DELETE')
                         <button type="submit">Deletar</button>
                     </form>
+
+                    <script>
+                        document.querySelectorAll('.delete-form').forEach(form => {
+                        form.addEventListener('submit', function(event) {
+                         if (!confirm('Tem certeza que deseja apagar?')) {
+                             event.preventDefault();
+                            }
+                         });
+                        });
+                    </script>
                 </td>
             </tr>
         @endforeach

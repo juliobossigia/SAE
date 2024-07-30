@@ -32,9 +32,19 @@
     <a href="{{ route('cursos.index') }}">Voltar</a>
     <a href="{{ route('cursos.edit', $curso->id) }}">Editar</a>
 
-    <form action="{{ route('cursos.destroy', $curso->id) }}" method="POST" style="display:inline">
-        @csrf
-        @method('DELETE')
-        <button type="submit">Deletar</button>
-    </form>
+    <form action="{{ route('cursos.destroy', $curso->id) }}" method="POST" style="display:inline" class="delete-form">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit">Deletar</button>
+                    </form>
+
+                    <script>
+                        document.querySelectorAll('.delete-form').forEach(form => {
+                        form.addEventListener('submit', function(event) {
+                         if (!confirm('Tem certeza que deseja apagar?')) {
+                             event.preventDefault();
+                            }
+                         });
+                        });
+                    </script>
 @endsection

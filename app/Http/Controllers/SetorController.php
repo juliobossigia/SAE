@@ -30,7 +30,7 @@ class SetorController extends Controller
 
     public function show(string $id){
 
-        $setor = Setor::findOrFail($id);
+        $setor = Setor::with('servidores')->findOrFail($id);
 
         return view('setores.show',compact('setor'));
     }

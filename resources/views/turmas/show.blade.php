@@ -29,9 +29,19 @@
     <a href="{{ route('turmas.index') }}">Voltar</a>
     <a href="{{ route('turmas.edit', $turma->id) }}">Editar</a>
 
-    <form action="{{ route('turmas.destroy', $turma->id) }}" method="POST" style="display:inline">
-        @csrf
-        @method('DELETE')
-        <button type="submit">Deletar</button>
-    </form>
+    <form action="{{ route('turmas.destroy', $turma->id) }}" method="POST" style="display:inline" class="delete-form">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit">Deletar</button>
+                    </form>
+
+                    <script>
+                        document.querySelectorAll('.delete-form').forEach(form => {
+                        form.addEventListener('submit', function(event) {
+                         if (!confirm('Tem certeza que deseja apagar?')) {
+                             event.preventDefault();
+                            }
+                         });
+                        });
+                    </script>
 @endsection
