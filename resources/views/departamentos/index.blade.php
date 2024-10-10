@@ -3,8 +3,8 @@
 
 @section('content')
     <header>
-    <h1>Lista de Docentes</h1>
-    <a href="{{ route('docentes.create') }}">Adicionar Docente</a>
+    <h1>Lista de Departamentos</h1>
+    <a href="{{ route('departamentos.create') }}">Adicionar departamento</a>
     @livewire('logout-button')
     <br>
     </header>
@@ -20,25 +20,14 @@
     <table>
         <tr>
             <th>Nome</th>
-            <th>Email</th>
-            <th>Departamento</th>
-            <th>Curso</th>
-            <th>Ações</th>
         </tr>
-        @foreach ($docentes as $docente)
+        @foreach ($departamentos as $departamento)
             <tr>
-                <td>{{ $docente->nome }}
-                @if($docente->is_coordenador)
-                <span class="badge badge-primary">Coordenador</span>
-                @endif
-                </td>
-                <td>{{ $docente->email }}</td>
-                <td>{{ $docente->departamento->nome}}</td>
-                <td>{{ $docente->curso ? $docente->curso->nome : 'Sem curso' }}</td>
+                <td>{{ $departamento->nome }}</td>
                 <td>
-                    <a href="{{ route('docentes.show', $docente->id) }}">Ver</a>
-                    <a href="{{ route('docentes.edit', $docente->id) }}">Editar</a>
-                    <form action="{{ route('docentes.destroy', $docente->id) }}" method="POST" style="display:inline" class="delete-form">
+                    <a href="{{ route('departamentos.show', $departamento->id) }}">Ver</a>
+                    <a href="{{ route('departamentos.edit', $departamento->id) }}">Editar</a>
+                    <form action="{{ route('departamentos.destroy', $departamento->id) }}" method="POST" style="display:inline" class="delete-form">
                         @csrf
                         @method('DELETE')
                         <button type="submit">Deletar</button>

@@ -7,10 +7,10 @@ use App\Http\Controllers\SetorController;
 use App\Http\Controllers\ServidorController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
-use App\Models\Curso;
-use App\Models\Docente;
-use App\Models\Setor;
-use App\Models\Turma;
+use App\Http\Controllers\DisciplinaController;
+use App\Http\Controllers\DepartamentoController;
+use App\Http\Controllers\LocalController;
+use App\Http\Controllers\PredioController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::view('/', 'welcome');
@@ -28,7 +28,11 @@ Route::middleware(['auth'])->group(function(){
     Route::resource('cursos', CursoController::class);
     Route::resource('turmas', TurmaController::class);
     Route::resource('setores', SetorController::class);
+    Route::resource('disciplinas', DisciplinaController::class);
     Route::resource('servidores', ServidorController::class);
+    Route::resource('departamentos', DepartamentoController::class);
+    Route::resource('locais', LocalController::class);
+    Route::resource('predios', PredioController::class);
 
     // Adiciona a rota API para obter turmas por curso
     Route::get('/api/cursos/{curso}/turmas', [CursoController::class, 'getTurmas'])->name('api.cursos.turmas');

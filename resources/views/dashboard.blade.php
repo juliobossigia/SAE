@@ -9,6 +9,10 @@
         <li><a href="{{route('cursos.index')}}">Cursos</a></li>
         <li><a href="{{route('servidores.index')}}">Servidores</a></li>
         <li><a href="{{route('setores.index')}}">Setores</a></li>
+        <li><a href="{{route('disciplinas.index')}}">Disciplina</a></li>
+        <li><a href="{{route('departamentos.index')}}">Departamento</a></li>
+        <li><a href="{{route('predios.index')}}">Predio</a></li>
+        <li><a href="{{route('locais.index')}}">Local</a></li>
 
 
 

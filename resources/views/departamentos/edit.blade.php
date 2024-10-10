@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-    <h1>Editar Disciplina</h1>
+    <h1>Editar Departamento</h1>
 
     @if ($errors->any())
         <div>
@@ -13,12 +13,12 @@
         </div>
     @endif
 
-    <form action="{{ route('disciplinas.update', $disciplina->id) }}" method="POST">
+    <form action="{{ route('departamentos.update', $departamento->id) }}" method="POST">
         @csrf
         @method('PUT')
 
         <label for="nome">Nome:</label>
-        <input type="text" name="nome" id="nome" value="{{ $disciplina->nome }}">
+        <input type="text" name="nome" id="nome" value="{{ $departamento->nome }}">
 
 
         <button type="submit">Atualizar</button>

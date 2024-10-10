@@ -5,6 +5,13 @@
 
     <p><strong>Nome:</strong> {{ $curso->nome }}</p>
 
+    <h2>Coordenador</h2>
+    <p>
+        {{ $curso->coordenador ? $curso->coordenador->nome : 'Sem coordenador' }}
+        @if($curso->coordenador)
+            <span class="badge bg-primary">Coordenador</span>
+        @endif
+    </p>
     <h2>Turmas do Curso</h2>
     @if($curso->turmas->isEmpty())
         <p>Não há turmas cadastradas neste curso.</p>

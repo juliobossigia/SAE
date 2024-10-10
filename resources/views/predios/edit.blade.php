@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-    <h1>Editar Disciplina</h1>
+    <h1>Editar Prédio</h1>
 
     @if ($errors->any())
         <div>
@@ -13,17 +13,14 @@
         </div>
     @endif
 
-    <form action="{{ route('disciplinas.update', $disciplina->id) }}" method="POST">
+    <form action="{{ route('predios.update', $predio->id) }}" method="POST">
         @csrf
         @method('PUT')
-
         <label for="nome">Nome:</label>
-        <input type="text" name="nome" id="nome" value="{{ $disciplina->nome }}">
-
-
-        <button type="submit">Atualizar</button>
+        <input type="text" name="nome" id="nome" value="{{ old('nome', $predio->nome) }}">
+        
+        <button type="submit">Salvar</button>
     </form>
 
-    <a href="{{ route('docentes.index') }}">Voltar</a>
+    <a href="{{ route('predios.index') }}">Voltar</a>
 @endsection
-

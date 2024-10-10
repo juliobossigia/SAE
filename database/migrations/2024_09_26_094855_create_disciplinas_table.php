@@ -14,7 +14,13 @@ return new class extends Migration
         Schema::create('disciplinas', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
+            $table->unsignedBigInteger('departamento_id'); // Chave estrangeira para Departamento
+            $table->unsignedBigInteger('docente_id')->nullable(); // Chave estrangeira para Docente
             $table->timestamps();
+    
+            // Relacionamentos
+            $table->foreign('departamento_id')->references('id')->on('departamentos')->onDelete('cascade');
+            $table->foreign('docente_id')->references('id')->on('docentes')->onDelete('cascade');
         });
     }
 
