@@ -13,6 +13,7 @@
         <li><a href="{{route('departamentos.index')}}">Departamento</a></li>
         <li><a href="{{route('predios.index')}}">Predio</a></li>
         <li><a href="{{route('locais.index')}}">Local</a></li>
+        <li><a href="{{route('admin.peding-registrations')}}">Registros Pendentes</a></li>
 
 
 

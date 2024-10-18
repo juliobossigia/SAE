@@ -29,7 +29,7 @@ Route::get('/registro', [RegistroController::class, 'showRegistrationForm'])->na
 Route::post('/registro', [RegistroController::class, 'store'])->name('registro.store');
 
     
-Route::middleware(['auth,role:admin'])->group(function(){
+Route::middleware(['auth'])->group(function(){
     Route::get('/dashboard',[DashboardController::class,'index'])->middleware(['auth'])->name('dashboard');
     Route::resource('alunos', AlunoController::class);
     Route::resource('docentes', DocenteController::class);
@@ -60,9 +60,9 @@ Route::middleware(['auth', 'role:servidor'])->group(function () {
     });  
 
 // Rota que aceita múltiplos roles
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'role:admin,docente,servidor']);      
+//Route::get('/dashboard', function () {
+  //  return view('dashboard');
+//})->middleware(['auth', 'role:admin,docente,servidor']);      
 
 //ver depois
 Route::get('/forgot-password', function () {

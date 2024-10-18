@@ -46,21 +46,7 @@
                                             <td>{{ ucfirst($registro->type) }}</td>
                                             <td>{{ $registro->created_at->format('d/m/Y H:i') }}</td>
                                             <td>
-                                                <div class="btn-group" role="group">
-                                                    <form action="{{ route('admin.approve-registration', $registro) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-success btn-sm me-2" onclick="return confirm('Tem certeza que deseja aprovar este cadastro?')">
-                                                            Aprovar
-                                                        </button>
-                                                    </form>
-
-                                                    <form action="{{ route('admin.reject-registration', $registro) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja rejeitar este cadastro?')">
-                                                            Rejeitar
-                                                        </button>
-                                                    </form>
-                                                </div>
+                                              <h2>AQUI VAI FICA APROVAR OU NEGAR</h2>
                                             </td>
                                         </tr>
                                     @endforeach
