@@ -16,8 +16,9 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Sala</th>
                     <th>Prédio</th>
+                    <th>Número</th>
+                    <th>Tipo</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -25,8 +26,9 @@
                 @foreach($locais as $local)
                 <tr>
                     <td>{{ $local->id }}</td>
-                    <td>{{ $local->sala }}</td>
-                    <td>{{ $local->predio->nome }}</td>
+                    <td>{{ $local->predio->nome }}</td>  <!-- Assumindo que existe a relação 'predio' -->
+                    <td>{{ $local->numero }}</td>  <!-- Mostra o número da sala/laboratório -->
+                    <td>{{ ucfirst($local->tipo_local) }}</td>  <!-- Capitaliza a primeira letra do tipo -->
                     <td>
                         <a href="{{ route('locais.edit', $local->id) }}">Editar</a>
                         <form action="{{ route('locais.destroy', $local->id) }}" method="POST" style="display:inline">

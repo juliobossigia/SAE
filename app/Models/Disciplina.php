@@ -24,4 +24,4 @@ class Disciplina extends Model
     public function docentes(){
         return $this->belongsToMany(Docente::class, 'disciplina_docente');
     }
-}
+} 

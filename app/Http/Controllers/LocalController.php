@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Local;
 use App\Models\Predio;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class LocalController extends Controller
 {
@@ -24,12 +25,23 @@ class LocalController extends Controller
     {
         $request->validate([
             'predio_id' => 'required|exists:predios,id',
-            'sala' => 'required|string',
+            'tipo_local' => 'required|in:sala,laboratório',
+            'numero' => [
+                'required',
+                Rule::unique('locais')->where(function ($query) use ($request) {
+                    return $query->where('numero', $request->numero)
+                                 ->where('tipo_local', $request->tipo_local) 
+                                 ->where('predio_id', $request->predio_id); 
+                }),
+            ], [
+                'numero.unique' => 'Já existe um(a) :input do tipo :tipo_local com este número neste prédio.',
+            ]
         ]);
 
         Local::create($request->all());
         return redirect()->route('locais.index')->with('success', 'Local criado com sucesso!');
     }
+    
 
     public function edit($id)
     {
@@ -41,8 +53,17 @@ class LocalController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'numero' => [
+                'required',
+                Rule::unique('locais')->where(function ($query) use ($request, $id) {
+                    return $query->where('numero', $request->numero)
+                                 ->where('tipo_local', $request->tipo_local) 
+                                 ->where('predio_id', $request->predio_id) 
+                                 ->where('id', '!=', $id); 
+                }),
+            ],
             'predio_id' => 'required|exists:predios,id',
-            'sala' => 'required|string',
+            'tipo_local' => 'required|in:sala,laboratório',
         ]);
 
         $local = Local::findOrFail($id);

@@ -11,7 +11,7 @@ class Local extends Model
     
     protected $table = 'locais';
 
-    protected $fillable = ['predio_id', 'sala']; // Referenciando a chave estrangeira para o prédio
+    protected $fillable = ['predio_id', 'tipo_local', 'numero']; // Referenciando a chave estrangeira para o prédio
 
     public function predio()
     {

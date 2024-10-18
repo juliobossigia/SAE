@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('locais', function (Blueprint $table) {
-        $table->id();
-        $table->unsignedBigInteger('predio_id'); // Chave estrangeira para Prédio
-        $table->string('sala');
-        $table->timestamps();
+            $table->id();
+            $table->unsignedBigInteger('predio_id'); // Chave estrangeira para Prédio
+            $table->string('tipo_local')->default('sala'); // Campo tipo, com default 'sala'
+            $table->integer('numero'); // Número da sala ou laboratório
+            $table->timestamps();
 
-        // Definir a relação com o prédio
-        $table->foreign('predio_id')->references('id')->on('predios')->onDelete('cascade');
+            // Definir a relação com o prédio
+            $table->foreign('predio_id')->references('id')->on('predios')->onDelete('cascade');
         });
-        
     }
 
     /**
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('local');
+        Schema::dropIfExists('locais'); // Corrigir o nome da tabela
     }
 };

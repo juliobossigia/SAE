@@ -20,9 +20,7 @@ class DepartamentoTest extends TestCase
         $this->actingAs($user);
 
         // Dado: Um departamento a ser criado
-        $data = [
-            'nome' => 'Departamento de Matemática',
-        ];
+        $data = Departamento::factory()->make()->toArray();
 
         // Quando: Enviar requisição para criar o departamento
         $response = $this->post('/departamentos', $data);
