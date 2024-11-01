@@ -46,19 +46,19 @@ class DocenteTest extends TestCase
         $response->assertStatus(302);
         echo $response->getContent();
 
-        //Log::info('Docente Data:', $docenteData);
+       // Log::info('Docente Data:', $docenteData);
         //Log::info('Response:', ['status' => $response->status(), 'content' => $response->getContent()]);
 
        
-
-       /* $docente = Docente::where('email', $docenteData['email'])->first();
+        /*
+        $docente = Docente::where('email', $docenteData['email'])->first();
 
         if ($docente) {
             Log::info('Docente encontrado:', $docente->toArray());
         } else {
             Log::info('Docente não encontrado no banco de dados.');
         }
-            */
+         */   
     }
 
     #[Test]

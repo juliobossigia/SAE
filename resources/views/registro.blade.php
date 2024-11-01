@@ -54,6 +54,7 @@
     <div class="form-group">
         <label for="type">Tipo:</label>
         <select class="form-control" id="type" name="type" required>
+            <option>Selecione</option>
             <option value="docente">Docente</option>
             <option value="servidor">Servidor</option>
         </select>

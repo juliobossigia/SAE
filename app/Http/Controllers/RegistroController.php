@@ -19,7 +19,7 @@ class RegistroController extends Controller
     {
         $departamentos = Departamento::all();
         $setores = Setor::all();
-        return view('registro', compact('departamentos', 'setores'));
+        return view('registro', compact('departamentos', 'setores') );
     }
 
     public function store(Request $request)
@@ -55,7 +55,7 @@ class RegistroController extends Controller
                 'role' => $registro->type,
             ]);
 
-            // Criar docente ou servidor baseado no type
+            // Criar docente ou servidor baseado no typee
             if ($registro->type === 'docente') {
                 Docente::create([
                     'nome' => $registro->nome,

@@ -15,11 +15,9 @@ class DepartamentoTest extends TestCase
     #[Test]
     public function it_can_create_a_departamento()
     {
-        // Autenticar um usuário (se necessário)
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        // Dado: Um departamento a ser criado
         $data = Departamento::factory()->make()->toArray();
 
         // Quando: Enviar requisição para criar o departamento
@@ -76,16 +74,13 @@ class DepartamentoTest extends TestCase
     $user = User::factory()->create();
     $this->actingAs($user);
 
-    // Criar um departamento
     $departamento = Departamento::factory()->create();
 
-    // Enviar requisição para deletar
     $response = $this->delete("/departamentos/{$departamento->id}");
 
     // Verificar se houve redirecionamento
     $response->assertStatus(302);
 
-    // Verificar se o departamento foi deletado da base de dados
     $this->assertDatabaseMissing('departamentos', ['id' => $departamento->id]);
     }
 

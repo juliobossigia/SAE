@@ -42,6 +42,8 @@ Route::middleware(['auth'])->group(function(){
     Route::resource('locais', LocalController::class);
     Route::resource('predios', PredioController::class);
     Route::get('/admin/peding-registrations', [RegistroController::class, 'index'])->name('admin.peding-registrations');
+    Route::post('/pending-registrations/{registro}/approve', [RegistroController::class, 'approve'])->name('registro.approve');
+    Route::post('/pending-registrations/{registro}/reject', [RegistroController::class, 'reject'])->name('registro.reject');
    
 
 
