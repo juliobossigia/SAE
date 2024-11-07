@@ -11,7 +11,7 @@ class AlunoController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */
+     */ 
     public function index()
     {
         $alunos = Aluno::with('turma', 'curso')->get();

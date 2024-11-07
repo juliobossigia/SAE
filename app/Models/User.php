@@ -85,6 +85,10 @@ class User extends Authenticatable
         return $this->hasOne(Servidor::class);
     }
 
+    public function registros(){
+        return $this->hasMany(Registro::class,'criado_por_id');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

@@ -26,4 +26,7 @@ class Turma extends Model
         return "{$this->ano}°{$this->letra}";
     }
 
+    public function registros(){
+        return $this->hasMany(Registro::class);
+    }
 }

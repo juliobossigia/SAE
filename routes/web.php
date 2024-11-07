@@ -13,6 +13,8 @@ use App\Http\Controllers\LocalController;
 use App\Http\Controllers\PredioController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\Admin\UserApprovalController;
+use App\Http\Controllers\AgendamentoController;
+use App\Http\Controllers\CadastroController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 
@@ -25,8 +27,8 @@ Route::view('profile', 'profile')
 
 Route::post('/logout',[App\Livewire\Actions\Logout::class, 'logout'])->name('logout'); 
 
-Route::get('/registro', [RegistroController::class, 'showRegistrationForm'])->name('registro');
-Route::post('/registro', [RegistroController::class, 'store'])->name('registro.store');
+Route::get('/registro', [CadastroController::class, 'showRegistrationForm'])->name('registro');
+Route::post('/registro', [CadastroController::class, 'store'])->name('registro.store');
 
     
 Route::middleware(['auth'])->group(function(){
@@ -41,9 +43,12 @@ Route::middleware(['auth'])->group(function(){
     Route::resource('departamentos', DepartamentoController::class);
     Route::resource('locais', LocalController::class);
     Route::resource('predios', PredioController::class);
-    Route::get('/admin/peding-registrations', [RegistroController::class, 'index'])->name('admin.peding-registrations');
-    Route::post('/pending-registrations/{registro}/approve', [RegistroController::class, 'approve'])->name('registro.approve');
-    Route::post('/pending-registrations/{registro}/reject', [RegistroController::class, 'reject'])->name('registro.reject');
+    Route::get('/admin/peding-registrations', [CadastroController::class, 'index'])->name('admin.peding-registrations');
+    Route::post('/pending-registrations/{registro}/approve', [CadastroController::class, 'approve'])->name('registro.approve');
+    Route::post('/pending-registrations/{registro}/reject', [CadastroController::class, 'reject'])->name('registro.reject');
+    Route::resource('registros', RegistroController::class);
+    Route::get('registros/search', [RegistroController::class, 'search'])->name('registros.search');
+    Route::resource('agendamentos', AgendamentoController::class);
    
 
 
