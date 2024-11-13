@@ -90,12 +90,12 @@ class DocenteController extends Controller
     {
         $request->validate([
             'nome' => 'required',
-            'email' => 'required|email|unique:docentes,email,' . $docente->id, // Permite o email do próprio docente
+            'email' => 'required|email|unique:docentes,email,' . $docente->id, 
             'data_nascimento' => 'required|date',
             'cpf' => 'required|unique:docentes,cpf,' . $docente->id, // Permite o CPF do próprio docente
-            'departamento_id' => 'required|exists:departamentos,id', // Valida que o departamento existe
-            'disciplinas' => 'required|array', // Valida que disciplinas sejam um array de IDs
-            'disciplinas.*' => 'exists:disciplinas,id', // Valida que os IDs existam na tabela disciplinas
+            'departamento_id' => 'required|exists:departamentos,id', 
+            'disciplinas' => 'required|array', 
+            'disciplinas.*' => 'exists:disciplinas,id', 
             'is_coordenador' => 'boolean',
             'curso_id' => 'nullable|exists:cursos,id',
         ]);
@@ -103,7 +103,7 @@ class DocenteController extends Controller
         // Atualiza os dados do docente e o departamento associado
         $docente->update($request->only(['nome', 'email', 'data_nascimento', 'cpf', 'departamento_id','is_coordenador']));
 
-        // Atualiza as disciplinas associadas ao docente
+        
         $docente->disciplinas()->sync($request->disciplinas);
 
         if ($request->is_coordenador){

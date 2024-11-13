@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Servidor;
 use App\Models\Setor;
+use Ramsey\Uuid\Lazy\LazyUuidFromString;
 
 class ServidorController extends Controller
 {
@@ -45,7 +46,7 @@ class ServidorController extends Controller
     public function show(string $id)
     {
         $servidor = Servidor::findOrFail($id);
-
+        
         return view('servidores.show', compact('servidor'));
     }
 

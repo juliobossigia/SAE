@@ -21,20 +21,20 @@ class AprovacaoUsuarioController extends Controller
 
         $user->update(['status' => 'aprovado']);
 
-        // Cria o registro na tabela apropriada baseado no role
+        
         if ($role->name === 'docente') {
             $user->docente()->create([
                 'nome' => $user->name,
                 'email' => $user->email,
                 'status' => 'ativo'
-                // Adicione outros campos conforme necessário
+                
             ]);
         } elseif ($role->name === 'servidor') {
             $user->servidor()->create([
                 'nome' => $user->name,
                 'email' => $user->email,
                 'status' => 'ativo'
-                // Adicione outros campos conforme necessário
+                
             ]);
         }
 
