@@ -36,6 +36,19 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-error :messages="$errors->get('form.email')" class="mt-2" />
         </div>
 
+        <!-- Tipo de Usuário -->
+        <div class="mt-4">
+            <x-input-label for="tipo_usuario" :value="__('Tipo de Usuário')" />
+            <select wire:model="form.tipo_usuario" id="tipo_usuario" class="block mt-1 w-full rounded-md border-gray-300">
+                <option value="">Selecione o tipo de usuário</option>
+                <option value="admin">Administrador</option>
+                <option value="servidor">Servidor</option>
+                <option value="docente">Docente</option>
+                <option value="responsavel">Responsável</option>
+            </select>
+            <x-input-error :messages="$errors->get('form.tipo_usuario')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Senha')" />

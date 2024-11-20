@@ -2,20 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class RoleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        
-        Role::create(['nome'=>'admin']);
-        Role::create(['nome'=>'docente']);
-        Role::create(['nome'=>'servidor']);
+        // Criar roles
+        Role::create(['name' => 'admin', 'guard_name' => 'web']);
+        Role::create(['name' => 'servidor', 'guard_name' => 'web']);
+        Role::create(['name' => 'docente', 'guard_name' => 'web']);
+        Role::create(['name' => 'responsavel', 'guard_name' => 'web']);
     }
 }

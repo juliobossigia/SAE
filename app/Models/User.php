@@ -21,7 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'status'
+        'status',
+        'tipo_usuario',
+        'cpf',
     ];
 
     /**
@@ -80,13 +82,13 @@ class User extends Authenticatable
         return $this->hasOne(Docente::class);
     }
 
-    public function servidor()
+    public function servidor()    
     {
         return $this->hasOne(Servidor::class);
     }
 
     public function registros(){
-        return $this->hasMany(Registro::class,'criado_por_id');
+        return $this->hasMany(Registro::class,'criado_por_id'); 
     }
 
     /**
@@ -97,8 +99,8 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'email_verified_at' => 'datetime',   
             'password' => 'hashed',
-        ];
+        ];       
     }
 }

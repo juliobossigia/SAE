@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Servidor;
 use App\Models\Setor;
-use Ramsey\Uuid\Lazy\LazyUuidFromString;
+use App\Models\User;
 
 class ServidorController extends Controller
 {
@@ -32,15 +32,29 @@ class ServidorController extends Controller
     {
         $request->validate([
             'nome' => 'required',
-            'email' => 'required|email|unique:servidores,email',
+            'email' => 'required|email|unique:servidores',
             'cpf' => 'required|unique:servidores',
             'setor_id' => 'required|exists:setores,id',
+            'password' => 'required|min:6',
         ]);
 
-        Servidor::create($request->all());
+        // Criar o servidor
+        $servidor = Servidor::create($request->except('password'));
+
+        // Criar o usuário associado
+        $user = User::create([
+            'name' => $request->nome,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'profile_type' => 'App\Models\Servidor',
+            'profile_id' => $servidor->id,
+        ]);
+
+        // Atribuir papel ao usuário
+        $user->assignRole('servidor');
 
         return redirect()->route('servidores.index')
-                         ->with('success', 'Servidor criado com sucesso.');
+            ->with('success', 'Servidor criado com sucesso.');
     }
 
     public function show(string $id)
@@ -61,8 +75,8 @@ class ServidorController extends Controller
     {
         $request->validate([
             'nome' => 'required',
-            'email' => 'required|email|unique:servidores,email' . $servidor->id,
-            'cpf' => 'required|unique:servidores',
+            'email' => 'required|email|unique:servidores,email,' . $servidor->id,
+            'cpf' => 'required|unique:servidores,cpf,' . $servidor->id,
             'setor_id' => 'required|exists:setores,id',
         ]);
 
@@ -77,5 +91,33 @@ class ServidorController extends Controller
         $servidor->delete();
 
         return redirect()->route('servidores.index')->with('success', 'Servidor deletado com sucesso.');
+    }
+
+    public function meuPerfil()
+    {
+        $servidor = Servidor::where('user_id', auth()->id())->firstOrFail();
+        return view('servidores.perfil', compact('servidor'));
+    }
+
+    public function meusAgendamentos()
+    {
+        $servidor = Servidor::where('user_id', auth()->id())->firstOrFail();
+        $agendamentos = $servidor->agendamentos;
+        return view('servidores.agendamentos', compact('agendamentos'));
+    }
+
+    public function meusRegistros()
+    {
+        $servidor = Servidor::where('user_id', auth()->id())->firstOrFail();
+        $registros = $servidor->registros;
+        return view('servidores.registros', compact('registros'));
+    }
+
+    private function verificarAutorizacao($servidor)
+    {
+        if (!auth()->user()->hasRole('admin') && 
+            $servidor->user_id !== auth()->id()) {
+            abort(403, 'Acesso não autorizado.');
+        }
     }
 }

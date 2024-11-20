@@ -17,13 +17,27 @@ class RegistroController extends Controller
      */
     public function index()
     {
-        $registros = Registro::with(['aluno', 'turma', 'setor', 'local', 'criadoPor'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $user = auth()->user();
+        $registros = collect();
+
+        // Filtra registros baseado no papel do usuário 
+        if ($user->role === 'admin' || $user->role === 'servidor') {
+            $registros = Registro::with(['aluno', 'turma'])->latest('data')->paginate(10);
+        } elseif ($user->role === 'docente') {
+            $registros = Registro::with(['aluno', 'turma'])
+                ->where('user_id', $user->id)
+                ->latest('data')
+                ->paginate(10);
+        } elseif ($user->role === 'responsavel') {
+            $alunosIds = $user->alunos()->pluck('id');
+            $registros = Registro::with(['aluno', 'turma'])
+                ->whereIn('aluno_id', $alunosIds)
+                ->latest('data')
+                ->paginate(10);
+        }
 
         return view('registros.index', compact('registros'));
     }
-
     /**
      * Show the form for creating a new resource.
      */

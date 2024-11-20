@@ -28,5 +28,5 @@
                             }
                          });
                         });
-                    </script>
-@endsection
+                    </script> 
+@endsection 

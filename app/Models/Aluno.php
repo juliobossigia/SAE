@@ -18,16 +18,32 @@ class Aluno extends Model
         'curso_id',
     ];
 
-    public function turma(){
+    public function turma()
+    {
         return $this->belongsTo(Turma::class);
     }
-    
-    public function curso(){
+
+    public function curso()
+    {
         return $this->belongsTo(Curso::class);
     }
 
-    public function registros(){
-        return $this->hasMany(Registro::class);
+    public function registros()
+    {
+        return $this->hasMany(Registro::class, 'aluno_id');
     }
-    
+    public function agendamentos()
+    {
+        return $this->hasMany(Agendamento::class);
+    }
+
+
+    /**
+     * @property \Illuminate\Database\Eloquent\Collection|Responsavel[] $responsaveis
+     */
+    public function responsaveis()
+    {
+        return $this->belongsToMany(Responsavel::class, 'aluno_responsavel')
+                    ->withTimestamps();
+    }
 }

@@ -68,7 +68,7 @@ class CadastroController extends Controller
                 Servidor::create([
                     'nome' => $registro->nome,
                     'email' => $registro->email,
-                    'cpf' => $registro->cpf,
+                    'cpf' => $registro->cpf, 
                     'setor_id' => $registro->setor_id,
                 ]);
             }

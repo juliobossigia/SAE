@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
+use App\Livewire\Auth\RegisterForm;
 
 class AppServiceProvider extends ServiceProvider
-{
+{ 
     /**
      * Register any application services.
      */
@@ -16,9 +18,9 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
-     */
+     */ 
     public function boot(): void
     {
-        //
+        Livewire::component('auth.register-form', RegisterForm::class);
     }
 }

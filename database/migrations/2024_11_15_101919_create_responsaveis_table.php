@@ -11,24 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('servidores', function (Blueprint $table) {
+        Schema::create('responsaveis', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
             $table->string('email')->unique();
-            $table->string('password');
             $table->string('cpf')->unique();
-            $table->foreignId('setor_id')->constrained('setores');
-            $table->boolean('status')->default(true);
-            $table->rememberToken();
+            $table->string('senha');
             $table->timestamps();
         });
     }
 
-    /** 
+    /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('servidores');
+        Schema::dropIfExists('responsaveis');
     }
 };

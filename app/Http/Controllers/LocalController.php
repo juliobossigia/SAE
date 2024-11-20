@@ -44,7 +44,7 @@ class LocalController extends Controller
     
 
     public function edit($id)
-    {
+    { 
         $local = Local::findOrFail($id);
         $predios = Predio::all(); // Buscando todos os prédios para o select
         return view('locais.edit', compact('local', 'predios'));
