@@ -13,19 +13,14 @@ class CheckRole
             return redirect('login');
         }
 
-        // Se não foram passados roles, permite o acesso
         if (empty($roles)) {
             return $next($request);
         }
 
-        // Verifica se o usuário tem algum dos roles especificados
-        foreach ($roles as $role) {
-            if ($request->user()->hasRole($role)) {
-                return $next($request);
-            }
+        if ($request->user()->hasAnyRole($roles)) {
+            return $next($request);
         }
 
-        // Se chegou aqui, o usuário não tem nenhum dos roles necessários
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Acesso não autorizado.'], 403);
         }

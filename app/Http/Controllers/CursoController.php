@@ -9,11 +9,11 @@ class CursoController extends Controller
 {
     public function index(){
         $cursos = Curso::all();
-        return view('cursos.index', compact('cursos'));
+        return view('admin.cursos.index', compact('cursos'));
     }
 
     public function create(){
-        return view('cursos.create');
+        return view('admin.cursos.create');
     }
 
     public function store(Request $request){
@@ -22,17 +22,17 @@ class CursoController extends Controller
         ]);
 
         Curso::create($request->all());
-        return redirect()->route('cursos.index')->with('success', 'Curso criado com sucesso!');
+        return redirect()->route('admin.cursos.index')->with('success', 'Curso criado com sucesso!');
     }
 
     public function show($id){
         $curso = Curso::with('turmas')->findOrFail($id);
-        return view('cursos.show', compact('curso'));
+        return view('admin.cursos.show', compact('curso'));
     }
 
     public function edit($id){
         $curso = Curso::findOrFail($id);
-        return view('cursos.edit', compact('curso'));
+        return view('admin.cursos.edit', compact('curso'));
     }
 
     public function update(Request $request, $id){
@@ -43,13 +43,13 @@ class CursoController extends Controller
         $curso = Curso::findOrFail($id);
         $curso->update($request->all());
         
-        return redirect()->route('cursos.index')->with('success', 'Curso atualizado com sucesso!');
+        return redirect()->route('admin.cursos.index')->with('success', 'Curso atualizado com sucesso!');
     }
 
     public function destroy($id){
         $curso = Curso::findOrFail($id);
         $curso->delete();
-        return redirect()->route('cursos.index')->with('success', 'Curso deletado com sucesso!');
+        return redirect()->route('admin.cursos.index')->with('success', 'Curso deletado com sucesso!');
     }
 
 

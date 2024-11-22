@@ -10,12 +10,12 @@ class PredioController extends Controller
     public function index()
     {
         $predios = Predio::all();
-        return view('predios.index', compact('predios'));
+        return view('admin.predios.index', compact('predios'));
     }
 
     public function create()
     {
-        return view('predios.create');
+        return view('admin.predios.create');
     }
 
     public function store(Request $request)
@@ -25,13 +25,13 @@ class PredioController extends Controller
         ]);
 
         Predio::create($request->all());
-        return redirect()->route('predios.index')->with('success', 'Prédio adicionado com sucesso!');
+        return redirect()->route('admin.predios.index')->with('success', 'Prédio adicionado com sucesso!');
     }
 
     public function edit($id)
     {
         $predio = Predio::findOrFail($id);
-        return view('predios.edit', compact('predio'));
+        return view('admin.predios.edit', compact('predio'));
     }
 
     public function update(Request $request, $id)
@@ -42,13 +42,13 @@ class PredioController extends Controller
 
         $predio = Predio::findOrFail($id);
         $predio->update($request->all());
-        return redirect()->route('predios.index')->with('success', 'Prédio atualizado com sucesso!');
+        return redirect()->route('admin.predios.index')->with('success', 'Prédio atualizado com sucesso!');
     }
 
     public function destroy($id)
     {
         $predio = Predio::findOrFail($id);
         $predio->delete();
-        return redirect()->route('predios.index')->with('success', 'Prédio removido com sucesso!');
+        return redirect()->route('admin.predios.index')->with('success', 'Prédio removido com sucesso!');
     }
 }

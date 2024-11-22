@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Docente;
 use App\Models\Departamento;
+use App\Models\Disciplina;
+use App\Models\Curso;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class DocenteController extends Controller
 {
@@ -12,40 +17,84 @@ class DocenteController extends Controller
     public function index()
     {
         $docentes = Docente::with('departamento')->get();
-        return view('docentes.index', compact('docentes'));
+        return view('admin.docentes.index', compact('docentes'));
     }
 
     public function create()
     {
         $departamentos = Departamento::all();
-        return view('docentes.create', compact('departamentos'));
+        $disciplinas = Disciplina::all();
+        $cursos = Curso::all();
+        return view('admin.docentes.create', compact('departamentos', 'disciplinas', 'cursos'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nome' => 'required',
-            'email' => 'required|email|unique:docentes,email',
-            'cpf' => 'required|unique:docentes',
+            'nome' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'cpf' => 'required|string|unique:users,cpf',
+            'password' => 'required|string|min:8|confirmed',
             'departamento_id' => 'required|exists:departamentos,id',
-            'user_id' => 'required|exists:users,id'
+            'data_nascimento' => 'required|date',
+            'is_coordenador' => 'boolean',
+            'curso_id' => 'required_if:is_coordenador,1|exists:cursos,id',
+            'status' => 'required|in:ativo,inativo'
         ]);
 
-        Docente::create($request->all());
+        DB::beginTransaction();
+        
+        try {
+            // Criar o usuário primeiro
+            $user = User::create([
+                'name' => $request->nome,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'cpf' => $request->cpf,
+                'tipo_usuario' => 'docente',
+                'status' => $request->status
+            ]);
 
-        return redirect()->route('docentes.index')
-                        ->with('success', 'Docente criado com sucesso.');
+            // Criar o docente
+            $docente = Docente::create([
+                'nome' => $request->nome,
+                'email' => $request->email,
+                'cpf' => $request->cpf,
+                'departamento_id' => $request->departamento_id,
+                'data_nascimento' => $request->data_nascimento,
+                'is_coordenador' => $request->boolean('is_coordenador'),
+                'curso_id' => $request->is_coordenador ? $request->curso_id : null,
+                'status' => $request->status == 'ativo'
+            ]);
+
+            // Estabelecer o relacionamento polimórfico
+            $user->profile()->associate($docente);
+            $user->save();
+
+            // Atribuir a role
+            $user->assignRole('docente');
+
+            DB::commit();
+            return redirect()->route('admin.docentes.index')
+                ->with('success', 'Docente criado com sucesso.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withInput()
+                ->with('error', 'Erro ao criar docente: ' . $e->getMessage());
+        }
     }
 
-    public function show(Docente $docente)
+    public function show(string $id)
     {
-        return view('docentes.show', compact('docente'));
+        $docente = Docente::with('departamento')->findOrFail($id);
+        return view('admin.docentes.show', compact('docente'));
     }
 
-    public function edit(Docente $docente)
+    public function edit(string $id)
     {
+        $docente = Docente::findOrFail($id);
         $departamentos = Departamento::all();
-        return view('docentes.edit', compact('docente', 'departamentos'));
+        return view('admin.docentes.edit', compact('docente', 'departamentos'));
     }
 
     public function update(Request $request, Docente $docente)
@@ -59,7 +108,7 @@ class DocenteController extends Controller
 
         $docente->update($request->all());
 
-        return redirect()->route('docentes.index')
+        return redirect()->route('admin.docentes.index')
                         ->with('success', 'Docente atualizado com sucesso.');
     }
 
@@ -67,7 +116,7 @@ class DocenteController extends Controller
     {
         $docente->delete();
 
-        return redirect()->route('docentes.index')
+        return redirect()->route('admin.docentes.index')
                         ->with('success', 'Docente deletado com sucesso.');
     }
 

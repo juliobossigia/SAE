@@ -15,7 +15,7 @@ class AlunoController extends Controller
     public function index()
     {
         $alunos = Aluno::with('turma', 'curso')->get();
-        return view('alunos.index', compact('alunos'));
+        return view('admin.alunos.index', compact('alunos'));
     }
 
     /**
@@ -25,7 +25,7 @@ class AlunoController extends Controller
     {
         $turmas = Turma::all();
         $cursos = Curso::all();
-        return view('alunos.create', compact('turmas', 'cursos'));
+        return view('admin.alunos.create', compact('turmas', 'cursos'));
     }
 
     /**
@@ -44,7 +44,7 @@ class AlunoController extends Controller
 
         Aluno::create($request->all());
 
-        return redirect()->route('alunos.index')->with('success', 'Aluno cadastrado com sucesso!');
+        return redirect()->route('admin.alunos.index')->with('success', 'Aluno cadastrado com sucesso!');
     }
 
     /**
@@ -53,7 +53,7 @@ class AlunoController extends Controller
     public function show(string $id)
     {
         $aluno = Aluno::with('turma', 'curso')->findOrFail($id);
-        return view('alunos.show', compact('aluno'));
+        return view('admin.alunos.show', compact('aluno'));
     }
 
     /**
@@ -65,7 +65,7 @@ class AlunoController extends Controller
         $turmas = Turma::all();
         $cursos = Curso::all();
 
-        return view('alunos.edit', compact('aluno', 'turmas', 'cursos'));
+        return view('admin.alunos.edit', compact('aluno', 'turmas', 'cursos'));
     }
 
     /**
@@ -84,7 +84,7 @@ class AlunoController extends Controller
 
         $aluno->update($request->all());
 
-        return redirect()->route('alunos.index')->with('success', 'Aluno atualizado com sucesso!');
+        return redirect()->route('admin.alunos.index')->with('success', 'Aluno atualizado com sucesso!');
     }
 
     /**
@@ -94,6 +94,6 @@ class AlunoController extends Controller
     {
         $aluno->delete();
 
-        return redirect()->route('alunos.index')->with('success', 'Aluno deletado com sucesso!');
+        return redirect()->route('admin.alunos.index')->with('success', 'Aluno deletado com sucesso!');
     }
 }

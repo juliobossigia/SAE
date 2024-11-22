@@ -8,23 +8,25 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Servidor extends Model
 {
-    use HasFactory, HasRoles;
+    use HasFactory;
+
+    protected $table = 'servidores';
 
     protected $fillable = [
         'nome',
         'email',
         'cpf',
         'setor_id',
-        // outros campos necessários
+        'status',
     ];
-
-    public function setor()
-    {
-        return $this->belongsTo(Setor::class);
-    }
 
     public function user()
     {
         return $this->morphOne(User::class, 'profile');
+    }
+
+    public function setor()
+    {
+        return $this->belongsTo(Setor::class);
     }
 }

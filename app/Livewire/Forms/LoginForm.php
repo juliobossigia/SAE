@@ -11,6 +11,7 @@ use Livewire\Attributes\Validate;
 use Livewire\Form;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Role;
 
 class LoginForm extends Form
 {
@@ -32,13 +33,6 @@ class LoginForm extends Form
     {
         $this->ensureIsNotRateLimited();
 
-        // Log para debug
-        Log::info('Tentativa de login', [
-            'email' => $this->email,
-            'tipo_usuario' => $this->tipo_usuario
-        ]);
-
-        // Primeiro tenta autenticar
         if (!Auth::attempt($this->only(['email', 'password']), $this->remember)) {
             RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages([
@@ -46,32 +40,42 @@ class LoginForm extends Form
             ]);
         }
 
-        // Depois verifica o role
         $user = Auth::user();
         
-        // Log para debug
-        Log::info('Usuário autenticado', [
-            'user_id' => $user->id,
-            'roles' => $user->roles()->pluck('nome')->toArray()
-        ]);
+        // Verifica se o tipo_usuario corresponde ao cadastrado
+        if ($user->tipo_usuario !== $this->tipo_usuario) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages([
+                'form.tipo_usuario' => 'Tipo de usuário não corresponde ao cadastrado.',
+            ]);
+        }
+
+        // Garante que o usuário tenha a role correspondente
+        if (!$user->hasRole($this->tipo_usuario)) {
+            $role = Role::where('name', $this->tipo_usuario)->first();
+            if ($role) {
+                $user->assignRole($role);
+            }
+        }
 
         if (!$user->hasRole($this->tipo_usuario)) {
             Auth::logout();
             RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages([
-                'form.tipo_usuario' => 'Tipo de usuário inválido para este login.',
+                'form.tipo_usuario' => 'Erro ao verificar permissões do usuário.',
             ]);
         }
 
         RateLimiter::clear($this->throttleKey());
 
-        // Define o redirecionamento baseado no tipo de usuário
+        // Define a rota nomeada correta para redirecionamento
         $this->redirectTo = match($this->tipo_usuario) {
-            'admin' => '/admin/dashboard',
-            'docente' => '/docente/dashboard',
-            'servidor' => '/servidor/dashboard',
-            'responsavel' => '/responsavel/dashboard',
-            default => '/dashboard'
+            'admin' => 'admin.dashboard',
+            'docente' => 'docente.dashboard',
+            'servidor' => 'servidor.dashboard',
+            'responsavel' => 'responsavel.dashboard',
+            default => 'dashboard'
         };
     }
 

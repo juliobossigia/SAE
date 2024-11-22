@@ -14,13 +14,12 @@ return new class extends Migration {
             $table->id();
             $table->string('nome');
             $table->string('email')->unique();
-            $table->string('password');
             $table->date('data_nascimento');
             $table->string('cpf')->unique();
-            $table->foreignId('departamento_id')->constrained();
+            $table->foreignId('departamento_id')->constrained('departamentos');
             $table->boolean('is_coordenador')->default(false);
+            $table->foreignId('curso_id')->nullable()->constrained('cursos');
             $table->boolean('status')->default(true);
-            $table->rememberToken();
             $table->timestamps();
         });
     }
@@ -32,6 +31,7 @@ return new class extends Migration {
     {
         Schema::table('docentes', function (Blueprint $table) {
             $table->dropForeign(['departamento_id']);
+            $table->dropForeign(['curso_id']);
         });
         
         Schema::dropIfExists('docentes');

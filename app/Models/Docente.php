@@ -2,21 +2,35 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Docente extends Model
 {
+    use HasFactory;
+
+    protected $table = 'docentes';
+
     protected $fillable = [
         'nome',
         'email',
         'cpf',
         'departamento_id',
-        'user_id'
+        'data_nascimento',
+        'is_coordenador',
+        'curso_id',
+        'status',
+    ];
+
+    protected $casts = [
+        'data_nascimento' => 'date',
+        'is_coordenador' => 'boolean',
+        'status' => 'boolean',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->morphOne(User::class, 'profile');
     }
 
     public function departamento()
@@ -27,6 +41,11 @@ class Docente extends Model
     public function disciplinas()
     {
         return $this->hasMany(Disciplina::class);
+    }
+
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class);
     }
 
     public function agendamentos()

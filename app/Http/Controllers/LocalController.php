@@ -12,13 +12,13 @@ class LocalController extends Controller
     public function index()
     {
         $locais = Local::with('predio')->get();
-        return view('locais.index', compact('locais'));
+        return view('admin.locais.index', compact('locais'));
     }
 
     public function create()
     {
-        $predios = Predio::all(); // Buscando todos os prédios
-        return view('locais.create', compact('predios'));
+        $predios = Predio::all();
+        return view('admin.locais.create', compact('predios'));
     }
 
     public function store(Request $request)
@@ -39,7 +39,7 @@ class LocalController extends Controller
         ]);
 
         Local::create($request->all());
-        return redirect()->route('locais.index')->with('success', 'Local criado com sucesso!');
+        return redirect()->route('admin.locais.index')->with('success', 'Local criado com sucesso!');
     }
     
 
@@ -47,7 +47,7 @@ class LocalController extends Controller
     { 
         $local = Local::findOrFail($id);
         $predios = Predio::all(); // Buscando todos os prédios para o select
-        return view('locais.edit', compact('local', 'predios'));
+        return view('admin.locais.edit', compact('local', 'predios'));
     }
 
     public function update(Request $request, $id)
@@ -69,13 +69,13 @@ class LocalController extends Controller
         $local = Local::findOrFail($id);
         $local->update($request->all());
 
-        return redirect()->route('locais.index')->with('success', 'Local atualizado com sucesso!');
+        return redirect()->route('admin.locais.index')->with('success', 'Local atualizado com sucesso!');
     }
 
     public function destroy($id)
     {
         $local = Local::findOrFail($id);
         $local->delete();
-        return redirect()->route('locais.index')->with('success', 'Local excluído com sucesso!');
+        return redirect()->route('admin.locais.index')->with('success', 'Local excluído com sucesso!');
     }
 }

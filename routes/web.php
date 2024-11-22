@@ -31,31 +31,25 @@ Route::middleware('guest')->group(function () {
 });
 
 // Rotas do Administrador
-Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->group(function () {
-    // Dashboard Admin
-    Route::get('/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
-    
-    // Gerenciamento de registros pendentes
-    Route::get('/pending-registrations', [CadastroController::class, 'index'])->name('admin.peding-registrations');
-    Route::post('/pending-registrations/{registro}/approve', [CadastroController::class, 'approve'])->name('registro.approve');
-    Route::post('/pending-registrations/{registro}/reject', [CadastroController::class, 'reject'])->name('registro.reject');
-    
-    // CRUD completo para todas as entidades
+Route::middleware(['web', 'auth', 'check.role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
     Route::resources([
         'alunos' => AlunoController::class,
         'docentes' => DocenteController::class,
-        'cursos' => CursoController::class,
         'turmas' => TurmaController::class,
+        'cursos' => CursoController::class,
+        'servidores' => ServidorController::class,
         'setores' => SetorController::class,
         'disciplinas' => DisciplinaController::class,
-        'servidores' => ServidorController::class,
         'departamentos' => DepartamentoController::class,
-        'locais' => LocalController::class,
         'predios' => PredioController::class,
-        'responsaveis' => ResponsavelController::class,
+        'locais' => LocalController::class,
         'registros' => RegistroController::class,
-        'agendamentos' => AgendamentoController::class,
+        'agendamentos' => AgendamentoController::class
     ]);
+    Route::get('/pending-registrations', [AdminController::class, 'pendingRegistrations'])
+        ->name('pending-registrations');
+    Route::resource('registros', RegistroController::class);
 });
 
 // Rotas do Docente
@@ -89,7 +83,6 @@ Route::middleware(['auth', 'check.role:responsavel'])->prefix('responsavel')->gr
 // Rotas comuns para usuários autenticados
 Route::middleware(['auth'])->group(function () {
     Route::view('profile', 'profile')->name('profile');
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [App\Livewire\Actions\Logout::class, 'logout'])->name('logout');
     
     // Rota API para obter turmas por curso

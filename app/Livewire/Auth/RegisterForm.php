@@ -46,10 +46,8 @@ class RegisterForm extends Component
     public function register()
     {
         try {
-            // Limpa o CPF
             $this->cpf = preg_replace('/[^0-9]/', '', $this->cpf);
             
-            // Valida os dados
             $validatedData = $this->validate();
             
             DB::beginTransaction();
@@ -59,7 +57,8 @@ class RegisterForm extends Component
                 'email' => $this->email,
                 'password' => Hash::make($this->password),
                 'cpf' => $this->cpf,
-                'status' => 'pendente'
+                'status' => 'pendente',
+                'tipo_usuario' => $this->tipo_usuario
             ]);
 
             if (!$user) {

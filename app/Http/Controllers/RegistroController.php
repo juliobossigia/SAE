@@ -17,26 +17,16 @@ class RegistroController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-        $registros = collect();
+        try {
+            $registros = Registro::with(['aluno', 'turma', 'setor'])
+                ->latest('data')
+                ->paginate(10);
 
-        // Filtra registros baseado no papel do usuário 
-        if ($user->role === 'admin' || $user->role === 'servidor') {
-            $registros = Registro::with(['aluno', 'turma'])->latest('data')->paginate(10);
-        } elseif ($user->role === 'docente') {
-            $registros = Registro::with(['aluno', 'turma'])
-                ->where('user_id', $user->id)
-                ->latest('data')
-                ->paginate(10);
-        } elseif ($user->role === 'responsavel') {
-            $alunosIds = $user->alunos()->pluck('id');
-            $registros = Registro::with(['aluno', 'turma'])
-                ->whereIn('aluno_id', $alunosIds)
-                ->latest('data')
-                ->paginate(10);
+            return view('admin.registros.index', compact('registros'));
+        } catch (\Exception $e) {
+            \Log::error('Erro ao carregar registros: ' . $e->getMessage());
+            return response()->view('admin.registros.index', ['registros' => collect(), 'error' => 'Erro ao carregar registros'], 200);
         }
-
-        return view('registros.index', compact('registros'));
     }
     /**
      * Show the form for creating a new resource.
@@ -48,7 +38,7 @@ class RegistroController extends Controller
         $setores = Setor::all();
         $locais = Local::all();
 
-        return view('registros.create', compact('alunos', 'turmas', 'setores', 'locais'));
+        return view('admin.registros.create', compact('alunos', 'turmas', 'setores', 'locais'));
     }
 
     /**
@@ -56,38 +46,45 @@ class RegistroController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'data' => 'required|date',
-            'aluno_id' => 'nullable|exists:alunos,id',
-            'turma_id' => 'nullable|exists:turmas,id',
-            'tipo' => 'required|in:Advertência,Registro Disciplinar,Nota NAI,Registro Pedagogico',
-            'descricao' => 'required|string',
-            'encaminhado_para' => 'required|exists:setores,id',
-            'agendamento' => 'boolean',
-            'data_agendamento' => 'nullable|date|required_if:agendamento,true',
-            'hora_agendamento' => 'nullable|date_format:H:i|required_if:agendamento,true',
-            'participantes' => 'nullable|string',
-            'local_id' => 'nullable|exists:locais,id'
-        ]);
-
-        $validated['criado_por_id'] = Auth::id();
-
-        $registro = Registro::create($validated);
-
-        if ($request->agendamento) {
-            $registro->agendamento()->create([
-                'data_agendamento' => $request->data_agendamento,
-                'hora_agendamento' => $request->hora_agendamento,
-                'participantes' => $request->participantes,
-                'local_id' => $request->local_id,
-                'status' => 'Pendente'
+        try {
+            $validated = $request->validate([
+                'data' => 'required|date',
+                'aluno_id' => 'nullable|exists:alunos,id',
+                'turma_id' => 'nullable|exists:turmas,id',
+                'tipo' => 'required|in:Advertência,Registro Disciplinar,Nota NAI,Registro Pedagogico',
+                'descricao' => 'required|string',
+                'encaminhado_para' => 'required|exists:setores,id',
+                'agendamento' => 'nullable|boolean',
+                'data_agendamento' => 'nullable|date|required_if:agendamento,true',
+                'hora_agendamento' => 'nullable|date_format:H:i|required_if:agendamento,true',
+                'participantes' => 'nullable|string',
+                'local_id' => 'nullable|exists:locais,id'
             ]);
+
+            $validated['criado_por_id'] = Auth::id();
+
+            $registro = Registro::create($validated);
+
+            if ($request->has('agendamento') && $request->agendamento) {
+                $registro->agendamento()->create([
+                    'data_agendamento' => $request->data_agendamento,
+                    'hora_agendamento' => $request->hora_agendamento,
+                    'participantes' => $request->participantes,
+                    'local_id' => $request->local_id,
+                    'status' => 'Pendente'
+                ]);
+            }
+
+            return redirect()
+                ->route('admin.registros.show', $registro)
+                ->with('success', 'Registro criado com sucesso!');
+
+        } catch (\Exception $e) {
+            \Log::error('Erro ao criar registro: ' . $e->getMessage());
+            return back()
+                ->withInput()
+                ->with('error', 'Erro ao criar registro. Por favor, tente novamente.');
         }
-
-
-        return redirect()
-            ->route('registros.show', $registro)
-            ->with('success', 'Registro criado com sucesso!');
     }
 
     /**
@@ -95,9 +92,15 @@ class RegistroController extends Controller
      */
     public function show(Registro $registro)
     {
-        $registro->load(['aluno', 'turma', 'setor', 'local', 'criadoPor']);
-
-        return view('registros.show', compact('registro'));
+        try {
+            $registro->load(['aluno', 'turma', 'setor', 'local', 'criadoPor']);
+            return view('admin.registros.show', compact('registro'));
+        } catch (\Exception $e) {
+            \Log::error('Erro ao exibir registro: ' . $e->getMessage());
+            return redirect()
+                ->route('admin.registros.index')
+                ->with('error', 'Erro ao exibir registro.');
+        }
     }
 
     /**
@@ -110,7 +113,7 @@ class RegistroController extends Controller
         $setores = Setor::all();
         $locais = Local::all();
 
-        return view('registros.edit', compact('registro', 'alunos', 'turmas', 'setores', 'locais'));
+        return view('admin.registros.edit', compact('registro', 'alunos', 'turmas', 'setores', 'locais'));
     }
 
     /**
@@ -135,7 +138,7 @@ class RegistroController extends Controller
         $registro->update($validated);
 
         return redirect()
-            ->route('registros.show', $registro)
+            ->route('admin.registros.show', $registro)
             ->with('success', 'Registro atualizado com sucesso!');
     }
 
@@ -147,7 +150,7 @@ class RegistroController extends Controller
         $registro->delete();
 
         return redirect()
-            ->route('registros.index')
+            ->route('admin.registros.index')
             ->with('success', 'Registro excluído com sucesso!');
     }
 
@@ -182,6 +185,6 @@ class RegistroController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('registros.index', compact('registros'));
+        return view('admin.registros.index', compact('registros'));
     }
 }

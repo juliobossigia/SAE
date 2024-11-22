@@ -20,7 +20,8 @@ new #[Layout('layouts.guest')] class extends Component
 
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        // Usa a rota nomeada definida no LoginForm
+        $this->redirect(route($this->form->redirectTo), navigate: true);
     }
 }; ?>
 

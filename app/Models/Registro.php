@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Registro extends Model
 {
@@ -21,9 +22,24 @@ class Registro extends Model
         'criado_por_id',
         'agendamento',
         'data_agendamento',
+        'hora_agendamento',
         'participantes',
-        'local_agendamento',
+        'local_id'
     ];
+
+    protected $with = ['aluno', 'turma', 'setor', 'local', 'criadoPor'];
+
+    protected $casts = [
+        'data' => 'date',
+        'data_agendamento' => 'date',
+        'hora_agendamento' => 'datetime',
+        'agendamento' => 'boolean',
+    ];
+
+    public function criadoPor()
+    {
+        return $this->belongsTo(User::class, 'criado_por_id');
+    }
 
     public function aluno()
     {
@@ -35,19 +51,14 @@ class Registro extends Model
         return $this->belongsTo(Turma::class);
     }
 
-    public function local()
-    {
-        return $this->belongsTo(Local::class);
-    }
-
-    public function criador()
-    {
-        return $this->belongsTo(User::class, 'criado_por_id');
-    }
-
     public function setor()
     {
         return $this->belongsTo(Setor::class, 'encaminhado_para');
+    }
+
+    public function local()
+    {
+        return $this->belongsTo(Local::class);
     }
 
     public function agendamento()

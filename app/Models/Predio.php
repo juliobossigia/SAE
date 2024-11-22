@@ -10,7 +10,7 @@ class Predio extends Model
     use HasFactory;
 
     protected $table = 'predios';
-
+ 
     protected $fillable = ['nome'];
 
     public function locais()

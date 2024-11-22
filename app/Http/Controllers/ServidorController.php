@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Servidor;
 use App\Models\Setor;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class ServidorController extends Controller
 {
@@ -19,56 +20,81 @@ class ServidorController extends Controller
                               })
                               ->get();
 
-        return view('servidores.index', compact('servidores', 'setores'));
+        return view('admin.servidores.index', compact('servidores', 'setores'));
     }
 
     public function create()
     {
         $setores = Setor::all();
-        return view('servidores.create', compact('setores'));
+        return view('admin.servidores.create', compact('setores'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nome' => 'required',
-            'email' => 'required|email|unique:servidores',
-            'cpf' => 'required|unique:servidores',
+            'nome' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'cpf' => 'required|string|unique:users,cpf',
+            'password' => 'required|string|min:8|confirmed',
             'setor_id' => 'required|exists:setores,id',
-            'password' => 'required|min:6',
+            'status' => 'required|in:ativo,inativo',
         ]);
 
-        // Criar o servidor
-        $servidor = Servidor::create($request->except('password'));
+        \DB::beginTransaction();
+        
+        try {
+            // Criar o usuário primeiro
+            $user = User::create([
+                'name' => $request->nome,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'cpf' => $request->cpf,
+                'tipo_usuario' => 'servidor',
+                'status' => $request->status,
+            ]);
 
-        // Criar o usuário associado
-        $user = User::create([
-            'name' => $request->nome,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'profile_type' => 'App\Models\Servidor',
-            'profile_id' => $servidor->id,
-        ]);
+            // Criar o servidor
+            $servidor = Servidor::create([
+                'nome' => $request->nome,
+                'email' => $request->email,
+                'cpf' => $request->cpf,
+                'setor_id' => $request->setor_id,
+                'status' => $request->status == 'ativo',
+            ]);
 
-        // Atribuir papel ao usuário
-        $user->assignRole('servidor');
+            // Estabelecer o relacionamento polimórfico
+            $servidor->user()->save($user);
 
-        return redirect()->route('servidores.index')
-            ->with('success', 'Servidor criado com sucesso.');
+            // Atribuir a role
+            $user->assignRole('servidor');
+
+            \DB::commit();
+
+            return redirect()->route('admin.servidores.index')
+                ->with('success', 'Servidor criado com sucesso.');
+        } catch (\Exception $e) {
+            \DB::rollback();
+            \Log::error('Erro ao criar servidor:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->withInput()
+                ->with('error', 'Erro ao criar servidor: ' . $e->getMessage());
+        }
     }
 
     public function show(string $id)
     {
         $servidor = Servidor::findOrFail($id);
         
-        return view('servidores.show', compact('servidor'));
+        return view('admin.servidores.show', compact('servidor'));
     }
 
     public function edit(string $id)
     {
         $servidor = Servidor::findOrFail($id);
         $setores = Setor::all();
-        return view('servidores.edit', compact('servidor', 'setores'));
+        return view('admin.servidores.edit', compact('servidor', 'setores'));
     }
 
     public function update(Request $request, Servidor $servidor)
@@ -82,7 +108,7 @@ class ServidorController extends Controller
 
         $servidor->update($request->all());
 
-        return redirect()->route('servidores.index')
+        return redirect()->route('admin.servidores.index')
                          ->with('success', 'Servidor atualizado com sucesso.');
     }
 
@@ -90,7 +116,7 @@ class ServidorController extends Controller
     {
         $servidor->delete();
 
-        return redirect()->route('servidores.index')->with('success', 'Servidor deletado com sucesso.');
+        return redirect()->route('admin.servidores.index')->with('success', 'Servidor deletado com sucesso.');
     }
 
     public function meuPerfil()

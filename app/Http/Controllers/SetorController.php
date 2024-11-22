@@ -10,12 +10,12 @@ class SetorController extends Controller
     public function index(){
 
         $setores= Setor::all();
-        return view('setores.index',compact('setores'));
+        return view('admin.setores.index',compact('setores'));
     }
 
     public function create(){
 
-        return view('setores.create');
+        return view('admin.setores.create');
     }
 
     public function store(Request $request){
@@ -25,21 +25,21 @@ class SetorController extends Controller
 
         Setor::create($request->all());
 
-        return redirect()->route('setores.index')->with('success','Setor criado com sucesso!');
+        return redirect()->route('admin.setores.index')->with('success','Setor criado com sucesso!');
     }
 
     public function show(string $id){
 
-        $setor = Setor::with('servidores')->findOrFail($id);
+        $setor = Setor::findOrFail($id);
 
-        return view('setores.show',compact('setor'));
+        return view('admin.setores.show',compact('setor'));
     }
 
     public function edit(string $id){
 
         $setor = Setor::findOrFail($id);
 
-        return view('setores.edit', compact('setor'));
+        return view('admin.setores.edit', compact('setor'));
     }
 
     public function update(Request $request, Setor $setor){
@@ -50,14 +50,14 @@ class SetorController extends Controller
         
         $setor->update($request->all());
 
-        return redirect()->route('setores.index')->with('success','Setor atualizado com sucesso!');
+        return redirect()->route('admin.setores.index')->with('success','Setor atualizado com sucesso!');
     }
 
     public function destroy(Setor $setor){
 
         $setor->delete();
 
-        return redirect()->route('setores.index')->with('success','Setor apagado com sucesso!');
+        return redirect()->route('admin.setores.index')->with('success','Setor apagado com sucesso!');
     }
 
 }

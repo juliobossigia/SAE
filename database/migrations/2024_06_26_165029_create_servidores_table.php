@@ -15,11 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('nome');
             $table->string('email')->unique();
-            $table->string('password');
             $table->string('cpf')->unique();
             $table->foreignId('setor_id')->constrained('setores');
             $table->boolean('status')->default(true);
-            $table->rememberToken();
             $table->timestamps();
         });
     }
