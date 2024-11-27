@@ -46,22 +46,22 @@
                                 </thead>
                                 <tbody>
                                     <!-- Iterando sobre os cadastros pendentes -->
-                                    @foreach($registrosPendentes as $registro)
+                                    @foreach($registrations as $registro)
                                     <tr>
-                                        <td>{{ $registro->nome }}</td>
+                                        <td>{{ $registro->name }}</td>
                                         <td>{{ $registro->email }}</td>
                                         <td>{{ $registro->cpf }}</td>
-                                        <td>{{ ucfirst($registro->type) }}</td>
+                                        <td>{{ ucfirst($registro->tipo_usuario) }}</td>
                                         <td>{{ $registro->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="text-center">
-                                            <form action="{{ route('registro.approve', $registro->id) }}" method="POST" style="display:inline;">
+                                            <form action="{{ route('admin.approve-registration', $registro->id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 <button type="submit" class="btn btn-success btn-sm">
                                                     <i class="fas fa-check"></i> Aprovar
                                                 </button>
                                             </form>
                                             <!-- Botão Rejeitar -->
-                                            <form action="{{ route('registro.reject', $registro->id) }}" method="POST" style="display:inline;">
+                                            <form action="{{ route('admin.reject-registration', $registro->id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 <button type="submit" class="btn btn-danger btn-sm">
                                                     <i class="fas fa-times"></i> Negar
@@ -82,7 +82,9 @@
     <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <div>
-    <a href="{{ route('dashboard') }}">Voltar</a>
+    <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+    </a>
 </div>
 </body>
 

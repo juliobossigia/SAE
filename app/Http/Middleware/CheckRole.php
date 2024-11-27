@@ -7,26 +7,16 @@ use Illuminate\Http\Request;
 
 class CheckRole
 {
-    public function handle(Request $request, Closure $next, ...$roles)
+    public function handle($request, Closure $next, ...$roles)
     {
-        if (!$request->user()) {
-            return redirect('login');
+        if (!auth()->check()) {
+            return redirect()->route('login');
         }
 
-        if (empty($roles)) {
-            return $next($request);
+        if (!auth()->user()->hasAnyRole($roles)) {
+            abort(403, 'Acesso não autorizado.');
         }
 
-        if ($request->user()->hasAnyRole($roles)) {
-            return $next($request);
-        }
-
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Acesso não autorizado.'], 403);
-        }
-
-        return redirect()
-            ->route('/')
-            ->with('error', 'Você não tem permissão para acessar esta página.');
+        return $next($request);
     }
 }

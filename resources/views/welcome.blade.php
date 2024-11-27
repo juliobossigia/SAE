@@ -25,5 +25,5 @@
                         <livewire:welcome.navigation />
                     @endif
                 </header>  
-    </body>
+    </body> 
 </html>

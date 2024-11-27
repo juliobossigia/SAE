@@ -1,3 +1,102 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    body {
+        @apply text-gray-800;
+    }
+}
+
+@layer components {
+    .card {
+        @apply bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden;
+    }
+
+    .card-header {
+        @apply p-6 bg-white border-b border-gray-100;
+    }
+
+    .card-body {
+        @apply p-6;
+    }
+
+    .btn {
+        @apply inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150;
+    }
+
+    .btn-primary {
+        @apply bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+    }
+
+    .btn-success {
+        @apply bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500;
+    }
+
+    .stat-card {
+        @apply flex items-center p-6 bg-white rounded-xl shadow-sm border border-gray-100;
+    }
+
+    .stat-icon {
+        @apply flex-shrink-0 p-3 rounded-lg;
+    }
+
+    .stat-content {
+        @apply ml-4;
+    }
+
+    .stat-title {
+        @apply text-sm font-medium text-gray-500;
+    }
+
+    .stat-value {
+        @apply mt-1 text-3xl font-semibold text-gray-900;
+    }
+
+    /* Navegação */
+    .nav-link {
+        @apply inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition duration-150 ease-in-out;
+    }
+
+    .nav-link.active {
+        @apply border-indigo-500 text-gray-900;
+    }
+
+    .nav-link:not(.active) {
+        @apply border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700;
+    }
+
+    /* Dropdown */
+    .dropdown-link {
+        @apply block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition duration-150 ease-in-out;
+    }
+
+    /* Cards */
+    .card {
+        @apply bg-white overflow-hidden shadow-sm sm:rounded-lg;
+    }
+
+    .card-header {
+        @apply px-4 py-5 bg-white border-b border-gray-200 sm:px-6;
+    }
+
+    .card-body {
+        @apply px-4 py-5 sm:p-6;
+    }
+
+    .dashboard-card {
+        @apply bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow;
+    }
+
+    .dashboard-stat {
+        @apply text-3xl font-bold;
+    }
+
+    .dashboard-icon-wrapper {
+        @apply p-3 rounded-lg;
+    }
+
+    .dashboard-button {
+        @apply inline-flex justify-center items-center px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors;
+    }
+}

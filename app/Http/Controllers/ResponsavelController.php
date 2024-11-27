@@ -12,13 +12,13 @@ class ResponsavelController extends Controller
     public function index()
     {
         $responsaveis = Responsavel::with('alunos')->get();
-        return view('responsaveis.index', compact('responsaveis'));
+        return view('responsavel.index', compact('responsaveis'));
     }
 
     public function create()
     {
         $alunos = Aluno::all();
-        return view('responsaveis.create', compact('alunos'));
+        return view('responsavel.create', compact('alunos'));
     }
 
     public function store(Request $request)
@@ -41,13 +41,13 @@ class ResponsavelController extends Controller
 
     public function show(Responsavel $responsavel)
     {
-        return view('responsaveis.show', compact('responsavel'));
+        return view('responsavel.show', compact('responsavel'));
     }
 
     public function edit(Responsavel $responsavel)
     {
         $alunos = Aluno::all();
-        return view('responsaveis.edit', compact('responsavel', 'alunos'));
+        return view('responsavel.edit', compact('responsavel', 'alunos'));
     }
 
     public function update(Request $request, Responsavel $responsavel)
@@ -63,7 +63,7 @@ class ResponsavelController extends Controller
         $responsavel->update($request->except('alunos'));
         $responsavel->alunos()->sync($request->alunos);
 
-        return redirect()->route('responsaveis.index')
+        return redirect()->route('responsavel.index')
                         ->with('success', 'Responsável atualizado com sucesso.');
     }
 
@@ -72,39 +72,95 @@ class ResponsavelController extends Controller
         $responsavel->alunos()->detach();
         $responsavel->delete();
 
-        return redirect()->route('responsaveis.index')
+        return redirect()->route('responsavel.index')
                         ->with('success', 'Responsável deletado com sucesso.');
     }
 
     // Métodos específicos para responsáveis logados
     public function meuPerfil()
     {
-        $responsavel = Responsavel::where('user_id', auth()->id())->firstOrFail();
-        return view('responsaveis.perfil', compact('responsavel'));
+        $responsavel = Responsavel::whereHas('user', function($query) {
+            $query->where('id', auth()->id());
+        })->firstOrFail();
+        return view('responsavel.perfil', compact('responsavel'));
+    }
+
+    private function getAuthenticatedResponsavel()
+    {
+        return Responsavel::whereHas('user', function($query) {
+            $query->where('id', auth()->id());
+        })->firstOrFail();
     }
 
     public function meusAlunos()
     {
-        $responsavel = Responsavel::where('user_id', auth()->id())->firstOrFail();
-        $alunos = $responsavel->alunos;
-        return view('responsaveis.alunos', compact('alunos'));
+        try {
+            $user = auth()->user();
+            
+            \Log::info('Tentando buscar responsável', [
+                'user_email' => $user->email
+            ]);
+
+            $responsavel = Responsavel::firstOrCreate(
+                ['email' => $user->email],
+                [
+                    'nome' => $user->name,
+                    'email' => $user->email,
+                    'cpf' => $user->cpf,
+                    'telefone' => null,
+                    'senha' => $user->password
+                ]
+            );
+
+            $alunos = $responsavel->alunos;
+            
+            return view('responsavel.alunos', compact('alunos'));
+            
+        } catch (\Exception $e) {
+            \Log::error('Erro ao buscar/criar responsável', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
     }
 
-    public function verRegistrosAluno($alunoId)
+    public function verRegistrosAluno(Aluno $aluno)
     {
-        $responsavel = Responsavel::where('user_id', auth()->id())->firstOrFail();
-        $aluno = $responsavel->alunos()->findOrFail($alunoId);
-        $registros = $aluno->registros;
+        \Log::info('Acessando registros do aluno', [
+            'aluno_id' => $aluno->id,
+            'responsavel_id' => auth()->user()->id,
+            'aluno_existe' => $aluno->exists,
+            'responsavel' => $this->getAuthenticatedResponsavel()->toArray(),
+            'alunos_do_responsavel' => $this->getAuthenticatedResponsavel()->alunos->pluck('id')
+        ]);
         
-        return view('responsaveis.registros-aluno', compact('aluno', 'registros'));
+        $responsavel = $this->getAuthenticatedResponsavel();
+        
+        // Verifica se o aluno pertence ao responsável
+        if (!$responsavel->alunos->contains($aluno)) {
+            \Log::warning('Aluno não pertence ao responsável', [
+                'aluno_id' => $aluno->id,
+                'responsavel_id' => $responsavel->id
+            ]);
+            abort(403, 'Não autorizado');
+        }
+        
+        $registros = $aluno->registros()->with('docente')->get();
+        
+        \Log::info('Registros encontrados', [
+            'quantidade' => $registros->count()
+        ]);
+        
+        return view('responsavel.registros-aluno', compact('aluno', 'registros'));
     }
 
     public function verAgendamentosAluno($alunoId)
     {
-        $responsavel = Responsavel::where('user_id', auth()->id())->firstOrFail();
+        $responsavel = $this->getAuthenticatedResponsavel();
         $aluno = $responsavel->alunos()->findOrFail($alunoId);
         $agendamentos = $aluno->agendamentos;
         
-        return view('responsaveis.agendamentos-aluno', compact('aluno', 'agendamentos'));
+        return view('responsavel.agendamentos-aluno', compact('aluno', 'agendamentos'));
     }
 }

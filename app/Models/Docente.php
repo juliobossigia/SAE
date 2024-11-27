@@ -52,4 +52,9 @@ class Docente extends Model
     {
         return $this->hasMany(Agendamento::class);
     }
+
+    public function registros()
+    {
+        return $this->hasMany(Registro::class, 'criado_por_id', 'id');
+    }
 }

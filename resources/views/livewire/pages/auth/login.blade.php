@@ -14,14 +14,24 @@ new #[Layout('layouts.guest')] class extends Component
      */
     public function login(): void
     {
-        $this->validate();
+        try {
+            $this->validate();
 
-        $this->form->authenticate();
+            $this->form->authenticate();
 
-        Session::regenerate();
-
-        // Usa a rota nomeada definida no LoginForm
-        $this->redirect(route($this->form->redirectTo), navigate: true);
+            Session::regenerate();
+            
+            // Força o redirecionamento sem usar navigate
+            $this->redirect(route($this->form->redirectTo));
+            
+        } catch (\Exception $e) {
+            \Log::error('Erro no login:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            session()->flash('error', 'Erro ao realizar login: ' . $e->getMessage());
+        }
     }
 }; ?>
 
@@ -29,7 +39,7 @@ new #[Layout('layouts.guest')] class extends Component
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form wire:submit="login">
+    <form wire:submit.prevent="login">
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
@@ -72,13 +82,18 @@ new #[Layout('layouts.guest')] class extends Component
 
         <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}" wire:navigate>
+                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
                     {{ __('Esqueceu sua senha?') }}
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
-                {{ __('Entrar') }}
+            <x-primary-button class="ms-3" wire:loading.attr="disabled">
+                <span wire:loading wire:target="login">
+                    {{ __('Entrando...') }}
+                </span>
+                <span wire:loading.remove>
+                    {{ __('Entrar') }}
+                </span>
             </x-primary-button>
         </div>
     </form>

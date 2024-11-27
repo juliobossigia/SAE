@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('layouts.admin')
 
 @section('content')
     <h1>Lista de Setores</h1>

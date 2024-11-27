@@ -1,124 +1,163 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Usuário</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    @livewireStyles
-</head>
-<body>
-    <div class="container mt-5">
-        <div class="card">
-            <div class="card-header">
-                <h2>Cadastro de Usuário</h2>
-            </div>
-            
-            <div class="card-body">
-                @if (session()->has('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
+<div class="container mt-5" x-data="{ 
+    tipoUsuario: @entangle('tipo_usuario').defer, 
+    isCoordenador: @entangle('is_coordenador').defer 
+}">
+    <div class="card">
+        <div class="card-header">
+            <h2>Cadastro de Usuário</h2>
+        </div>
+        
+        <div class="card-body">
+            @if (session()->has('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                @if (session()->has('error'))
-                    <div class="alert alert-danger">
-                        {{ session('error') }}
-                    </div>
-                @endif
+            @if (session()->has('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
 
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form wire:submit.prevent="register">
+                <div class="form-group">
+                    <label for="name">Nome Completo:</label>
+                    <input type="text" class="form-control" id="name" wire:model.defer="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail:</label>
+                    <input type="email" class="form-control" id="email" wire:model.defer="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cpf">CPF:</label>
+                    <input type="text" class="form-control" id="cpf" wire:model.defer="cpf" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha:</label>
+                    <input type="password" class="form-control" id="password" wire:model.defer="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password_confirmation">Confirmar Senha:</label>
+                    <input type="password" class="form-control" id="password_confirmation" wire:model.defer="password_confirmation" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo_usuario">Tipo de Usuário:</label>
+                    <select 
+                        class="form-control" 
+                        id="tipo_usuario" 
+                        wire:model.defer="tipo_usuario"
+                        x-model="tipoUsuario"
+                        @change="$wire.set('tipo_usuario', $event.target.value)"
+                        required
+                    >
+                        <option value="">Selecione</option>
+                        <option value="docente">Docente</option>
+                        <option value="servidor">Servidor</option>
+                        <option value="responsavel">Responsável</option>
+                    </select>
+                </div>
+
+                <div class="mt-2 text-muted">
+                    <small>Alpine tipoUsuario: <span x-text="tipoUsuario"></span></small><br>
+                    <small>Livewire tipo_usuario: {{ $tipo_usuario }}</small>
+                </div>
+
+                <div x-show="tipoUsuario === 'docente'">
+                    <div class="form-group">
+                        <label for="departamento_id">Departamento:</label>
+                        <select 
+                            class="form-control" 
+                            id="departamento_id" 
+                            wire:model="departamento_id" 
+                            :required="tipoUsuario === 'docente'"
+                        >
+                            <option value="">Selecione o Departamento</option>
+                            @foreach($departamentos as $departamento)
+                                <option value="{{ $departamento->id }}">{{ $departamento->nome }}</option>
                             @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                <form wire:submit.prevent="register">
-                    <div class="form-group">
-                        <label for="name">Nome:</label>
-                        <input type="text" class="form-control" id="name" wire:model.defer="name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">E-mail:</label>
-                        <input type="email" class="form-control" id="email" wire:model.defer="email" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="cpf">CPF:</label>
-                        <input type="text" 
-                               class="form-control" 
-                               id="cpf" 
-                               wire:model.defer="cpf" 
-                               required 
-                               maxlength="14"
-                               placeholder="000.000.000-00">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="tipo_usuario">Tipo:</label>
-                        <select class="form-control" id="tipo_usuario" wire:model.defer="tipo_usuario" required>
-                            <option value="">Selecione</option>
-                            <option value="docente">Docente</option>
-                            <option value="servidor">Servidor</option>
-                            <option value="responsavel">Responsável</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="password">Senha:</label>
-                        <input type="password" class="form-control" id="password" wire:model.defer="password" required>
+                        <label for="data_nascimento">Data de Nascimento:</label>
+                        <input 
+                            type="date" 
+                            class="form-control" 
+                            id="data_nascimento" 
+                            wire:model.defer="data_nascimento"
+                            :required="tipoUsuario === 'docente'"
+                        >
                     </div>
 
                     <div class="form-group">
-                        <label for="password_confirmation">Confirme a Senha:</label>
-                        <input type="password" class="form-control" id="password_confirmation" wire:model.defer="password_confirmation" required>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="is_coordenador" wire:model="is_coordenador">
+                            <label class="form-check-label" for="is_coordenador">É Coordenador?</label>
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
-                        <span wire:loading wire:target="register">
-                            Processando...
-                        </span>
-                        <span wire:loading.remove>
-                            Cadastrar
-                        </span>
-                    </button>
-                </form>
+                    @if($is_coordenador)
+                        <div class="form-group">
+                            <label for="curso_id">Curso:</label>
+                            <select class="form-control" id="curso_id" wire:model="curso_id" required>
+                                <option value="">Selecione o Curso</option>
+                                @foreach($cursos as $curso)
+                                    <option value="{{ $curso->id }}">{{ $curso->nome }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                </div>
 
-                @if(app()->environment('local'))
-                    <div class="mt-4">
-                        <pre>{{ print_r($errors->all(), true) }}</pre>
+                <div x-show="tipoUsuario === 'servidor'">
+                    <div class="form-group">
+                        <label for="setor_id">Setor:</label>
+                        <select 
+                            class="form-control" 
+                            id="setor_id" 
+                            wire:model.defer="setor_id"
+                            :required="tipoUsuario === 'servidor'"
+                        >
+                            <option value="">Selecione o Setor</option>
+                            @foreach($setores as $setor)
+                                <option value="{{ $setor->id }}">{{ $setor->nome }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                @endif
-            </div>
+                    
+                    <div class="mt-2 text-muted">
+                        <small>Tipo usuário: {{ $tipo_usuario }}</small><br>
+                        <small>Setor selecionado: {{ $setor_id }}</small><br>
+                        <small>Setores disponíveis: {{ count($setores) }}</small>
+                    </div>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="btn btn-primary" 
+                    wire:loading.attr="disabled"
+                    @click="console.log('Botão clicado')"
+                >
+                    <span wire:loading wire:target="register">Cadastrando...</span>
+                    <span wire:loading.remove>Cadastrar</span>
+                </button>
+            </form>
         </div>
     </div>
-
-    @livewireScripts
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const cpfInput = document.getElementById('cpf');
-        if (cpfInput) {
-            cpfInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 11) value = value.slice(0, 11);
-                
-                if (value.length > 9) {
-                    value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{1,2}).*/, '$1.$2.$3-$4');
-                } else if (value.length > 6) {
-                    value = value.replace(/^(\d{3})(\d{3})(\d{1,3}).*/, '$1.$2.$3');
-                } else if (value.length > 3) {
-                    value = value.replace(/^(\d{3})(\d{1,3}).*/, '$1.$2');
-                }
-                
-                e.target.value = value;
-            });
-        }
-    });
-    </script>
-</body>
-</html>
+</div>

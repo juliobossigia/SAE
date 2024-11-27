@@ -7,6 +7,7 @@ use App\Models\Aluno;
 use App\Models\Turma;
 use App\Models\Setor;
 use App\Models\Local;
+use App\Models\Curso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,12 +34,13 @@ class RegistroController extends Controller
      */
     public function create()
     {
+        $cursos = Curso::orderBy('nome')->get();
         $alunos = Aluno::orderBy('nome')->get();
         $turmas = Turma::all();
         $setores = Setor::all();
         $locais = Local::all();
 
-        return view('admin.registros.create', compact('alunos', 'turmas', 'setores', 'locais'));
+        return view('admin.registros.create', compact('cursos', 'alunos', 'turmas', 'setores', 'locais'));
     }
 
     /**
@@ -186,5 +188,17 @@ class RegistroController extends Controller
             ->paginate(10);
 
         return view('admin.registros.index', compact('registros'));
+    }
+
+    public function getTurmasPorCurso($curso_id)
+    {
+        $turmas = Turma::where('curso_id', $curso_id)->get();
+        return response()->json($turmas);
+    }
+
+    public function getAlunosPorTurma($turma_id)
+    {
+        $alunos = Aluno::where('turma_id', $turma_id)->get();
+        return response()->json($alunos);
     }
 }

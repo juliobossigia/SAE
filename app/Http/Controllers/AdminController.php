@@ -111,4 +111,36 @@ class AdminController extends Controller
             return back()->with('error', 'Erro ao remover administrador: ' . $e->getMessage());
         }
     }
+
+    public function pendingRegistrations()
+    {
+        // Busca usuários com status pendente
+        $registrations = User::where('status', 'pendente')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.pending-registrations', compact('registrations'));
+    }
+
+    public function approveRegistration($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'ativo';
+        $user->save();
+
+        return redirect()
+            ->route('admin.pending-registrations')
+            ->with('success', 'Cadastro aprovado com sucesso!');
+    }
+
+    public function rejectRegistration($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'rejeitado';
+        $user->save();
+
+        return redirect()
+            ->route('admin.pending-registrations')
+            ->with('success', 'Cadastro rejeitado com sucesso!');
+    }
 }

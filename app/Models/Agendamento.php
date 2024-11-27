@@ -21,6 +21,11 @@ class Agendamento extends Model
         'data_agendamento'
     ];
 
+    protected $casts = [
+        'data_agendamento' => 'datetime',
+        'hora_agendamento' => 'datetime',
+    ];
+
     public function registro(): BelongsTo
     {
         return $this->belongsTo(Registro::class);

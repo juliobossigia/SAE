@@ -15,6 +15,7 @@
     <li><a href="{{ route('admin.locais.index') }}">Locais</a></li>
     <li><a href="{{ route('admin.pending-registrations') }}">Registros Pendentes</a></li>
     <li><a href="{{ route('admin.registros.index') }}">Registros</a></li>
+    <li><a href="{{ route('admin.aluno-responsavel.create') }}">Aluno Responsável</a></li>
 </ul>
 <br>
 @livewire('logout-button')

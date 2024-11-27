@@ -20,19 +20,13 @@ class Registro extends Model
         'descricao',
         'encaminhado_para',
         'criado_por_id',
-        'agendamento',
-        'data_agendamento',
-        'hora_agendamento',
-        'participantes',
-        'local_id'
+        'agendamento'
     ];
 
     protected $with = ['aluno', 'turma', 'setor', 'local', 'criadoPor'];
 
     protected $casts = [
         'data' => 'date',
-        'data_agendamento' => 'date',
-        'hora_agendamento' => 'datetime',
         'agendamento' => 'boolean',
     ];
 
@@ -64,5 +58,10 @@ class Registro extends Model
     public function agendamento()
     {
         return $this->hasOne(Agendamento::class);
+    }
+
+    public function hasAgendamento()
+    {
+        return $this->agendamento()->exists();
     }
 }

@@ -31,51 +31,25 @@ class LoginForm extends Form
 
     public function authenticate(): void
     {
-        $this->ensureIsNotRateLimited();
+        $credentials = [
+            'email' => $this->email,
+            'password' => $this->password,
+            'tipo_usuario' => $this->tipo_usuario
+        ];
 
-        if (!Auth::attempt($this->only(['email', 'password']), $this->remember)) {
-            RateLimiter::hit($this->throttleKey());
+        if (! Auth::attempt($credentials, $this->remember)) {
             throw ValidationException::withMessages([
-                'form.email' => trans('auth.failed'),
+                'email' => trans('auth.failed'),
             ]);
         }
 
-        $user = Auth::user();
-        
-        // Verifica se o tipo_usuario corresponde ao cadastrado
-        if ($user->tipo_usuario !== $this->tipo_usuario) {
-            Auth::logout();
-            RateLimiter::hit($this->throttleKey());
-            throw ValidationException::withMessages([
-                'form.tipo_usuario' => 'Tipo de usuário não corresponde ao cadastrado.',
-            ]);
-        }
-
-        // Garante que o usuário tenha a role correspondente
-        if (!$user->hasRole($this->tipo_usuario)) {
-            $role = Role::where('name', $this->tipo_usuario)->first();
-            if ($role) {
-                $user->assignRole($role);
-            }
-        }
-
-        if (!$user->hasRole($this->tipo_usuario)) {
-            Auth::logout();
-            RateLimiter::hit($this->throttleKey());
-            throw ValidationException::withMessages([
-                'form.tipo_usuario' => 'Erro ao verificar permissões do usuário.',
-            ]);
-        }
-
-        RateLimiter::clear($this->throttleKey());
-
-        // Define a rota nomeada correta para redirecionamento
-        $this->redirectTo = match($this->tipo_usuario) {
+        // Define o redirecionamento com base no tipo de usuário
+        $this->redirectTo = match ($this->tipo_usuario) {
             'admin' => 'admin.dashboard',
-            'docente' => 'docente.dashboard',
             'servidor' => 'servidor.dashboard',
+            'docente' => 'docente.dashboard',
             'responsavel' => 'responsavel.dashboard',
-            default => 'dashboard'
+            default => '/'
         };
     }
 

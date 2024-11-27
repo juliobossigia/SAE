@@ -12,13 +12,19 @@ class Responsavel extends Model
         'nome',
         'email',
         'cpf',
-        'telefone',
-        'user_id'
+        'telefone'
+    ];
+
+    protected $casts = [
+        'nome' => 'string',
+        'email' => 'string',
+        'cpf' => 'string',
+        'telefone' => 'string'
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->morphOne(User::class, 'profile');
     }
 
     public function alunos()

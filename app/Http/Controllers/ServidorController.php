@@ -7,6 +7,11 @@ use App\Models\Servidor;
 use App\Models\Setor;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Registro;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Agendamento;
+use App\Models\Aluno;
+use App\Models\Turma;
 
 class ServidorController extends Controller
 {
@@ -122,21 +127,49 @@ class ServidorController extends Controller
     public function meuPerfil()
     {
         $servidor = Servidor::where('user_id', auth()->id())->firstOrFail();
-        return view('servidores.perfil', compact('servidor'));
+        return view('servidor.perfil', compact('servidor'));
     }
 
     public function meusAgendamentos()
     {
-        $servidor = Servidor::where('user_id', auth()->id())->firstOrFail();
-        $agendamentos = $servidor->agendamentos;
-        return view('servidores.agendamentos', compact('agendamentos'));
+        $agendamentos = Agendamento::query()
+            ->whereHas('registro', function ($query) {
+                $query->where('criado_por_id', auth()->id());
+            })
+            ->with(['local', 'registro.aluno'])
+            ->orderBy('data_agendamento')
+            ->orderBy('hora_agendamento')
+            ->paginate(10);
+
+        return view('servidor.agendamentos.index', compact('agendamentos'));
     }
 
     public function meusRegistros()
     {
-        $servidor = Servidor::where('user_id', auth()->id())->firstOrFail();
-        $registros = $servidor->registros;
-        return view('servidores.registros', compact('registros'));
+        $registros = Registro::with(['aluno', 'turma', 'setor'])
+            ->where('criado_por_id', Auth::id())
+            ->latest('data')
+            ->paginate(10);
+
+        return view('servidor.registros.index', compact('registros'));
+    }
+
+    public function showRegistro(Registro $registro)
+    {
+        $registro->load(['aluno', 'turma', 'setor', 'criadoPor', 'agendamento.local']);
+        return view('servidor.registros.show', compact('registro'));
+    }
+
+    public function createRegistro()
+    {
+        return view('servidor.registros.create');
+    }
+
+    public function storeRegistro(Request $request)
+    {
+        // Este método não será mais necessário pois o RegistroForm
+        // lidará com o armazenamento diretamente
+        return redirect()->route('servidor.registros.index');
     }
 
     private function verificarAutorizacao($servidor)

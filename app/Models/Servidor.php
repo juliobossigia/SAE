@@ -2,14 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Permission\Traits\HasRoles;
 
 class Servidor extends Model
 {
-    use HasFactory;
-
     protected $table = 'servidores';
 
     protected $fillable = [
@@ -17,7 +13,11 @@ class Servidor extends Model
         'email',
         'cpf',
         'setor_id',
-        'status',
+        'status'
+    ];
+
+    protected $casts = [
+        'status' => 'boolean',
     ];
 
     public function user()

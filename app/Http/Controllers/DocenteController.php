@@ -7,6 +7,12 @@ use App\Models\Departamento;
 use App\Models\Disciplina;
 use App\Models\Curso;
 use App\Models\User;
+use App\Models\Registro;
+use App\Models\Turma;
+use App\Models\Aluno;
+use App\Models\Setor;
+use App\Models\Local;
+use App\Models\Agendamento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -141,11 +147,131 @@ class DocenteController extends Controller
         return view('docentes.disciplinas', compact('disciplinas'));
     }
 
+    public function agendamentos()
+    {
+        // Busca o docente autenticado
+        $docente = auth()->user()->profile;
+        
+        // Busca os registros feitos pelo docente
+        $registros = Registro::where('docente_id', $docente->id)
+            ->with(['agendamentos' => function($query) {
+                $query->orderBy('data_agendamento', 'desc');
+            }, 'agendamentos.local', 'aluno'])
+            ->has('agendamentos')
+            ->get();
+
+        return view('docente.agendamentos.index', [
+            'registros' => $registros
+        ]);
+    }
+
+    public function registros()
+    {
+        $turmas = Turma::all();
+        $alunos = Aluno::all();
+        $setores = Setor::all();
+        $locais = Local::all();
+
+        return view('docente.registros.create', compact('turmas', 'alunos', 'setores', 'locais'));
+    }
+
+    public function storeRegistro(Request $request)
+    {
+        // Regras básicas de validação
+        $rules = [
+            'data' => 'required|date',
+            'turma_id' => 'required|exists:turmas,id',
+            'aluno_id' => 'required|exists:alunos,id',
+            'tipo' => 'required|in:Advertência,Registro Disciplinar,Nota NAI,Registro Pedagogico',
+            'descricao' => 'required|string',
+            'encaminhado_para' => 'required|exists:setores,id',
+        ];
+
+        // Adiciona regras de validação para agendamento apenas se o checkbox estiver marcado
+        if ($request->has('agendamento') && $request->agendamento) {
+            $rules['data_agendamento'] = 'required|date';
+            $rules['hora_agendamento'] = 'required|date_format:H:i';
+            $rules['participantes'] = 'required|string';
+            $rules['local_id'] = 'required|exists:locais,id';
+        }
+
+        $validated = $request->validate($rules);
+
+        try {
+            DB::beginTransaction();
+
+            // Criar o registro
+            $registro = Registro::create([
+                'data' => $validated['data'],
+                'turma_id' => $validated['turma_id'],
+                'aluno_id' => $validated['aluno_id'],
+                'tipo' => $validated['tipo'],
+                'descricao' => $validated['descricao'],
+                'encaminhado_para' => $validated['encaminhado_para'],
+                'criado_por_id' => auth()->id(),
+                'agendamento' => $request->has('agendamento'),
+            ]);
+
+            // Se houver agendamento, adicionar os dados do agendamento
+            if ($request->has('agendamento') && $request->agendamento) {
+                $registro->update([
+                    'data_agendamento' => $validated['data_agendamento'],
+                    'hora_agendamento' => $validated['hora_agendamento'],
+                    'participantes' => $validated['participantes'],
+                    'local_id' => $validated['local_id'],
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('docente.registros.index')
+                ->with('success', 'Registro criado com sucesso!');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            \Log::error('Erro ao criar registro: ' . $e->getMessage());
+            return back()
+                ->withInput()
+                ->with('error', 'Erro ao criar registro. Por favor, tente novamente.');
+        }
+    }
+
     private function verificarAutorizacao($docente)
     {
         if (!auth()->user()->hasRole('admin') && 
             $docente->user_id !== auth()->id()) {
             abort(403, 'Acesso não autorizado.');
         }
+    }
+
+    public function listarRegistros()
+    {
+        try {
+            // Usar criado_por_id ao invés de docente_id
+            $registros = Registro::where('criado_por_id', auth()->id())
+                ->with(['aluno', 'turma'])
+                ->orderBy('data', 'desc')
+                ->get();
+
+            return view('docente.registros.index', compact('registros'));
+        } catch (\Exception $e) {
+            \Log::error('Erro ao listar registros: ' . $e->getMessage());
+            return back()->with('error', 'Erro ao carregar registros. Por favor, tente novamente.');
+        }
+    }
+
+    public function showRegistro(Registro $registro)
+    {
+        // Verifica se o registro foi criado pelo docente atual
+        if ($registro->criado_por_id !== auth()->id()) {
+            abort(403, 'Você não tem permissão para ver este registro.');
+        }
+
+        return view('docente.registros.show', [
+            'registro' => $registro,
+            'setores' => Setor::all(), // Adicione se necessário
+            'locais' => Local::all()   // Adicione se necessário
+        ]);
     }
 }
